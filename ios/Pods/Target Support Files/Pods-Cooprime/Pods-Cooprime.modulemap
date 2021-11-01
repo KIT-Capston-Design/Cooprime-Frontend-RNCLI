@@ -1,0 +1,6 @@
+module Pods_Cooprime {
+  umbrella header "Pods-Cooprime-umbrella.h"
+
+  export *
+  module * { export * }
+}
