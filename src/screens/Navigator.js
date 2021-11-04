@@ -1,19 +1,16 @@
-import { StatusBar } from "react-native";
 import React from "react";
-import { StyleSheet, Text, View, Button } from "react-native";
 
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
-import HeaderBar from "./src/layouts/HeaderBar.js";
-import OneToOneCall from "./src/screens/OneToOneCall.js";
-import GroupCall from "./src/screens/GroupCall.js";
-import Calling from "./src/screens/Calling.js";
-import Chatting from "./src/screens/Chatting.js";
-import Profile from "./src/screens/Profile.js";
-import Alarm from "./src/screens/Alarm.js";
+import OneToOneCall from "./OneToOneCall";
+import GroupCall from "./GroupCall";
+import Calling from "./Calling";
+import Chatting from "./Chatting";
+import Profile from "./Profile";
+import Alarm from "./Alarm";
 
 const HomeTab = createBottomTabNavigator();
 
@@ -53,29 +50,17 @@ function HomeTabs() {
 
 const Stack = createNativeStackNavigator();
 
-export default function App() {
+export default function Navigator() {
   return (
-    <>
-      <HeaderBar />
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName="Home"
-          screenOptions={{ headerShown: false }}
-        >
-          <Stack.Screen name="Home" component={HomeTabs} />
-          <Stack.Screen name="OneToOne" component={OneToOneCall} />
-          <Stack.Screen name="Group" component={GroupCall} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </>
+    <NavigationContainer>
+      <Stack.Navigator
+        initialRouteName="Home"
+        screenOptions={{ headerShown: false }}
+      >
+        <Stack.Screen name="Home" component={HomeTabs} />
+        <Stack.Screen name="OneToOne" component={OneToOneCall} />
+        <Stack.Screen name="Group" component={GroupCall} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  text: {
-    fontSize: 30,
-  },
-});
