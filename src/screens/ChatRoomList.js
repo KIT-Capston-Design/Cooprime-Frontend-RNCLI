@@ -1,5 +1,11 @@
-import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const STORAGE_KEY = "@chatRooms";
@@ -56,7 +62,7 @@ export default function ChatRoomList() {
         {Object.keys(chatRooms).map(key => (
           <View style={styles.chatRoom}>
             {/* <Icon style={styles.profileImage}/> 프로필 사진 */}
-            <TouchableOpacity style={chatRoomInfo} onPress={}>
+            <TouchableOpacity style={chatRoomInfo}>
               <View style={styles.chatLog} key={key}>
                 <Text style={styles.chatRoomName}>
                   {chatRooms[key].chatRoomName}
