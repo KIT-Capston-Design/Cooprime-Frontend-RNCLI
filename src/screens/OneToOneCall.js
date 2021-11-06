@@ -59,11 +59,13 @@ export default function OneToOneCall({ navigation }) {
     setOnVideo(!onVideo);
   };
 
-  useEffect(() => {
+  useEffect(async () => {
     console.log("-----------------useEffect----------------");
 
-    initSocket();
-    initCall();
+    await initSocket();
+    console.log("socket", socket);
+    console.log("tmpStream", tmpStream);
+    await initCall();
 
     console.log("End initCall method");
     console.log("matched start");
@@ -78,6 +80,7 @@ export default function OneToOneCall({ navigation }) {
     myPeerConnection.onaddstream = async data => {
       console.log("On Add Stream");
       await setRemoteStream(data.stream);
+      console.log("tmpStream", tmpStream);
       setTimeout(() => setLocalStream(tmpStream), 1000);
     };
   }, []);
@@ -89,6 +92,8 @@ export default function OneToOneCall({ navigation }) {
     socket = await io(SERVER_DOMAIN + ":" + SERVER_PORT, {
       cors: { origin: "*" },
     });
+    console.log("socket", socket);
+    console.log("tmpStream", tmpStream);
 
     // Socket Code
     socket.on("matched", async roomName => {
