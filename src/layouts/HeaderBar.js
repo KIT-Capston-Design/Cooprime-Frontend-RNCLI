@@ -17,12 +17,13 @@ const styles = StyleSheet.create({
     flex: 0.15,
     borderBottomColor: "#aaaaaa",
     borderBottomWidth: 0.5,
-    alignItems: "center",
+    // alignItems: "center",
     justifyContent: "center",
   },
   headerText: {
-    paddingTop: width / 20,
+    paddingTop: width / 10,
+    paddingLeft: width / 20,
     fontSize: width / 10,
-    // fontFamily: 'DancingScript-Bold',
+    fontFamily: "DancingScript-Bold",
   },
 });

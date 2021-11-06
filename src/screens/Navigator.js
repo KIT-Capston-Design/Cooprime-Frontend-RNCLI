@@ -13,11 +13,16 @@ import HeaderBar from "../layouts/HeaderBar";
 import OneToOneCall from "./OneToOneCall";
 import GroupCall from "./GroupCall";
 import Calling from "./Calling";
-import Chatting from "./Chatting";
+import Chatting from "./ChatRoomList";
 import Profile from "./Profile";
 import Alarm from "./Alarm";
 
+// ChatStacks
+import ChatRoomList from "./ChatRoomList";
+import ChatRoom from "./ChatRoom";
+
 const HomeTab = createBottomTabNavigator();
+const ChatStack = createNativeStackNavigator();
 const Stack = createNativeStackNavigator();
 
 const LoginNavigator = () => {
@@ -33,6 +38,23 @@ const LoginNavigator = () => {
   );
 };
 
+function ChatStacks() {
+  return (
+    <>
+      <ChatStack.Navigator>
+        <ChatStack.Screen
+          name="ChatRoomList"
+          component={ChatRoomList}
+        ></ChatStack.Screen>
+        <ChatStack.Screen
+          name="ChatRoom"
+          component={ChatRoom}
+        ></ChatStack.Screen>
+      </ChatStack.Navigator>
+    </>
+  );
+}
+
 function HomeTabs() {
   return (
     <>
@@ -44,7 +66,7 @@ function HomeTabs() {
             size = 30;
             if (route.name === "Calling") {
               iconName = focused ? "home" : "home-outline";
-            } else if (route.name === "Chatting") {
+            } else if (route.name === "Chat") {
               iconName = focused ? "chat" : "chat-outline";
             } else if (route.name === "Alarm") {
               iconName = focused ? "bell" : "bell-outline";
@@ -62,7 +84,7 @@ function HomeTabs() {
         })}
       >
         <HomeTab.Screen name="Calling" component={Calling} />
-        <HomeTab.Screen name="Chatting" component={Chatting} />
+        <HomeTab.Screen name="Chat" component={ChatStacks} />
         <HomeTab.Screen name="Alarm" component={Alarm} />
         <HomeTab.Screen name="Profile" component={Profile} />
       </HomeTab.Navigator>
