@@ -71,13 +71,13 @@ export default function OneToOneCall({ navigation }) {
     console.log("matched start");
 
     // RTC Code
-    myPeerConnection.onicecandidate = data => {
+    myPeerConnection.onicecandidate = (data) => {
       console.log("sent candidate");
       console.log(realRoomName);
       socket.emit("ice", data.candidate, realRoomName);
     };
 
-    myPeerConnection.onaddstream = async data => {
+    myPeerConnection.onaddstream = async (data) => {
       console.log("On Add Stream");
       await setRemoteStream(data.stream);
       console.log("tmpStream", tmpStream);
@@ -96,7 +96,7 @@ export default function OneToOneCall({ navigation }) {
     console.log("tmpStream", tmpStream);
 
     // Socket Code
-    socket.on("matched", async roomName => {
+    socket.on("matched", async (roomName) => {
       realRoomName = roomName;
       //룸네임이 본인의 아이디로 시작하면 본인이 시그널링 주도
       if (roomName.match(new RegExp(`^${socket.id}`))) {
@@ -113,7 +113,7 @@ export default function OneToOneCall({ navigation }) {
       }
     });
 
-    socket.on("offer", async offer => {
+    socket.on("offer", async (offer) => {
       console.log("received the offer");
       await myPeerConnection.setRemoteDescription(
         new RTCSessionDescription(offer)
@@ -126,14 +126,14 @@ export default function OneToOneCall({ navigation }) {
       console.log("sent the answer");
     });
 
-    socket.on("answer", async answer => {
+    socket.on("answer", async (answer) => {
       console.log("received the answer");
       await myPeerConnection.setRemoteDescription(
         new RTCSessionDescription(answer)
       );
     });
 
-    socket.on("ice", ice => {
+    socket.on("ice", (ice) => {
       console.log("received candidate");
       myPeerConnection.addIceCandidate(ice);
     });
@@ -161,7 +161,7 @@ export default function OneToOneCall({ navigation }) {
     // console.log(source);
     // });
     // console.log("devices : ", devices);
-    const camera = devices.filter(device => {
+    const camera = devices.filter((device) => {
       device.kind === "videoinput" && device.facing === "front";
     });
     // console.log("camera : ", camera);

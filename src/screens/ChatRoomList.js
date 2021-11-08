@@ -28,7 +28,7 @@ export default function ChatRoomList() {
     }
   };
 
-  const deleteChatRoom = async key => {
+  const deleteChatRoom = async (key) => {
     Alert.alert(
       "채팅방에서 나가시겠습니까?",
       "대화내용이 삭제되고\n채탱목록에서도 삭제됩니다.",
@@ -48,7 +48,7 @@ export default function ChatRoomList() {
     );
   };
 
-  const saveChatRooms = async toSave => {
+  const saveChatRooms = async (toSave) => {
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
     } catch (e) {
@@ -59,7 +59,7 @@ export default function ChatRoomList() {
   return (
     <View style={styles.container}>
       <ScrollView>
-        {Object.keys(chatRooms).map(key => (
+        {Object.keys(chatRooms).map((key) => (
           <View style={styles.chatRoom}>
             {/* <Icon style={styles.profileImage}/> 프로필 사진 */}
             <TouchableOpacity style={chatRoomInfo}>
