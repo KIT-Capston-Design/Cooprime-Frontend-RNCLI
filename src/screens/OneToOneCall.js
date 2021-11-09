@@ -210,12 +210,7 @@ export default function OneToOneCall({ navigation }) {
     <View style={styles.container}>
       <View style={styles.videoContainer}>
         <View style={styles.localVideos}>
-          <View style={styles.localVideos}>
-            <RTCView
-              style={styles.localVideo}
-              streamURL={localStream.toURL()}
-            />
-          </View>
+          <RTCView style={styles.localVideo} streamURL={localStream.toURL()} />
         </View>
         <View style={styles.remoteVideos}>
           <RTCView
@@ -288,12 +283,12 @@ const styles = StyleSheet.create({
   localVideo: {
     height: "100%",
     width: "100%",
-    backgroundColor: "#009999",
+    backgroundColor: "#aaaaaa",
   },
   remoteVideo: {
     height: "100%",
     width: "100%",
-    backgroundColor: "#ff0000",
+    backgroundColor: "#dddddd",
   },
   callSetting: {
     backgroundColor: "#fff0ff",
