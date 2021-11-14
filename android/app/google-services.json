@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "833027123463",
+    "firebase_url": "https://my-test-project-a8cb5-default-rtdb.firebaseio.com",
+    "project_id": "my-test-project-a8cb5",
+    "storage_bucket": "my-test-project-a8cb5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:833027123463:android:6cd58615b734b056a23da2",
+        "android_client_info": {
+          "package_name": "com.cooprime"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "833027123463-gjpeln8tncsj5onmant937ocpb8blqa6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDthbI8V0sJk9ekO-rLY2uylH7iUk0FXhY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "833027123463-gjpeln8tncsj5onmant937ocpb8blqa6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
