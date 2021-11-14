@@ -9,7 +9,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Login from "./Login";
 
 // HomeTabs
-import HeaderBar from "../layouts/HeaderBar";
+import Header from "../layouts/Header";
 import OneToOneCall from "./OneToOneCall";
 import GroupCall from "./GroupCall";
 import Calling from "./Calling";
@@ -41,10 +41,15 @@ const LoginNavigator = () => {
 function ChatStacks() {
   return (
     <>
-      <ChatStack.Navigator>
+      <ChatStack.Navigator
+      // screenOptions={{
+      //   headerShown: false,
+      // }}
+      >
         <ChatStack.Screen
           name="ChatRoomList"
           component={ChatRoomList}
+          options={{ headerShown: false }}
         ></ChatStack.Screen>
         <ChatStack.Screen
           name="ChatRoom"
@@ -58,7 +63,7 @@ function ChatStacks() {
 function HomeTabs() {
   return (
     <>
-      <HeaderBar />
+      <Header />
       <HomeTab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
@@ -83,10 +88,10 @@ function HomeTabs() {
           tabBarShowLabel: false,
         })}
       >
-        <HomeTab.Screen name="Calling" component={Calling} />
-        <HomeTab.Screen name="Chat" component={ChatStacks} />
-        <HomeTab.Screen name="Alarm" component={Alarm} />
         <HomeTab.Screen name="Profile" component={Profile} />
+        <HomeTab.Screen name="Chat" component={ChatStacks} />
+        <HomeTab.Screen name="Calling" component={Calling} />
+        <HomeTab.Screen name="Alarm" component={Alarm} />
       </HomeTab.Navigator>
     </>
   );
