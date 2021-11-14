@@ -1,11 +1,21 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
+import { Box, ScrollView, Text } from "native-base";
+
+export const Profile = () => {
+  return (
+    <>
+      <Box></Box>
+    </>
+  );
+};
 
 export default function Profile() {
   return (
-    <View style={styles.container}>
-      <Text style={{ fontSize: 50 }}>Profile</Text>
-    </View>
+    <Box>
+      <Profile />
+      <ScrollView></ScrollView>
+    </Box>
   );
 }
 

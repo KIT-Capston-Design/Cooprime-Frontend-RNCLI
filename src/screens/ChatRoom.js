@@ -36,6 +36,7 @@ export default function ChatRoom() {
   return (
     <View>
       <ScrollView>
+        <Text>dfsdf</Text>
         {Object.keys(chatLogs).map((key) => (
           <View>
             <Text>ChatRoom</Text>
