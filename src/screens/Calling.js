@@ -11,7 +11,6 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 export default function Calling({ navigation }) {
   const startOneToOneCall = () => {
     // 일대일 통화 시작
-    console.log("??");
     navigation.navigate("OneToOne"); // 일대일 통화 페이지로 이동
   };
 
