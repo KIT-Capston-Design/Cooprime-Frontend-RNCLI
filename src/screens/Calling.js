@@ -62,3 +62,18 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
+// import React, { Component } from "react";
+// import { View, Animated, Text } from "react-native";
+// import CallButton from "./CallButton";
+// import { Center } from "native-base";
+
+// export default function Calling() {
+//   return (
+//     <>
+//       <Center>
+//         <CallButton />
+//         <Text>asdf</Text>
+//       </Center>
+//     </>
+//   );
+// }
