@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  AsyncStorage,
 } from "react-native";
 import {
   Avatar,
@@ -15,7 +16,6 @@ import {
   Pressable,
   Box,
 } from "native-base";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const STORAGE_KEY = "@chatRooms";
 
