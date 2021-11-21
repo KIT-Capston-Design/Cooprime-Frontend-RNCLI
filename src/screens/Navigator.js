@@ -5,8 +5,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
-// LoginTabs
-import Login from "./Login";
+// // LoginTabs
+// import Login from "./login/Login";
 
 // HomeTabs
 import Header from "../layouts/Header";
@@ -97,7 +97,7 @@ function HomeTabs() {
   );
 }
 
-const MainNavigator = () => {
+export const MainNavigator = () => {
   return (
     <Stack.Navigator
       initialRouteName="Home"
@@ -110,11 +110,11 @@ const MainNavigator = () => {
   );
 };
 
-export default function Navigator() {
+export function Navigator() {
   return (
     <NavigationContainer>
       {/* 로그인 기능 구현되면 아래의 true를 로그인 상태로 변경 */}
-      {true ? <MainNavigator /> : <LoginNavigator />}
+      <MainNavigator />
     </NavigationContainer>
   );
 }

@@ -20,7 +20,9 @@ import {
 // 로컬 : "http://192.168.0.9"
 // 승형PC : "aitta.iptime.org"
 
-const SERVER_DOMAIN = "http://123.213.225.243";
+// const SERVER_DOMAIN = "http://123.213.225.243";
+
+const SERVER_DOMAIN = "http://KITCapstone.iptime.org";
 const SERVER_PORT = "3000";
 
 let socket;
@@ -31,9 +33,18 @@ export default function OneToOneCall({ navigation }) {
   let tmpStream;
   const [localStream, setLocalStream] = useState({ toURL: () => null });
   const [remoteStream, setRemoteStream] = useState({ toURL: () => null });
-  const [isFront, setIsFront] = useState(false);
+  //const [isFront, setIsFront] = useState(false);
   const [onMic, setOnMic] = useState(false);
   const [onVideo, setOnVideo] = useState(true);
+
+  const toggleMic = () => {
+    setOnMic(!onMic);
+  };
+
+  const toggleVideo = () => {
+    setOnVideo(!onVideo);
+  };
+
   const [myPeerConnection, setMyPeerConnection] = useState(
     //change the config as you need
     new RTCPeerConnection({
@@ -51,20 +62,10 @@ export default function OneToOneCall({ navigation }) {
     })
   );
 
-  const toggleMic = () => {
-    setOnMic(!onMic);
-  };
-
-  const toggleVideo = () => {
-    setOnVideo(!onVideo);
-  };
-
   useEffect(async () => {
     console.log("-----------------useEffect----------------");
 
     await initSocket();
-    console.log("socket", socket);
-    console.log("tmpStream", tmpStream);
     await initCall();
 
     console.log("End initCall method");
@@ -80,7 +81,6 @@ export default function OneToOneCall({ navigation }) {
     myPeerConnection.onaddstream = async (data) => {
       console.log("On Add Stream");
       await setRemoteStream(data.stream);
-      console.log("tmpStream", tmpStream);
       setTimeout(() => setLocalStream(tmpStream), 1000);
     };
   }, []);
@@ -92,12 +92,11 @@ export default function OneToOneCall({ navigation }) {
     socket = await io(SERVER_DOMAIN + ":" + SERVER_PORT, {
       cors: { origin: "*" },
     });
-    console.log("socket", socket);
-    console.log("tmpStream", tmpStream);
 
     // Socket Code
     socket.on("matched", async (roomName) => {
       realRoomName = roomName;
+
       //룸네임이 본인의 아이디로 시작하면 본인이 시그널링 주도
       if (roomName.match(new RegExp(`^${socket.id}`))) {
         // 방장 역할
@@ -147,26 +146,12 @@ export default function OneToOneCall({ navigation }) {
 
     await getMedia();
     //await getCamera();
-    connectPeer();
   };
 
   const connectPeer = () => {
     console.log("connectPeer");
   };
 
-  const getCamera = async () => {
-    console.log("getCamera Start");
-    const devices = await mediaDevices.enumerateDevices();
-    // mediaDevices.enumerateDevices().then(source => {
-    // console.log(source);
-    // });
-    // console.log("devices : ", devices);
-    const camera = devices.filter((device) => {
-      device.kind === "videoinput" && device.facing === "front";
-    });
-    // console.log("camera : ", camera);
-    // videoSourceId = sourceInfo.deviceId;
-  };
   const getMedia = async () => {
     console.log("getMedia start");
     const myStream = await mediaDevices.getUserMedia({
@@ -209,14 +194,14 @@ export default function OneToOneCall({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.videoContainer}>
-        <View style={styles.localVideos}>
-          <RTCView style={styles.localVideo} streamURL={localStream.toURL()} />
-        </View>
         <View style={styles.remoteVideos}>
           <RTCView
-            style={styles.remoteVideo}
             streamURL={remoteStream.toURL()}
+            style={styles.remoteVideo}
           />
+        </View>
+        <View style={styles.localVideos}>
+          <RTCView streamURL={localStream.toURL()} style={styles.localVideo} />
         </View>
       </View>
       <View style={styles.callSetting}>
@@ -250,6 +235,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#ffff00",
+    // alignItems: "center",
+    // justifyContent: "center",
+    // flexDirection: "row",
   },
   videoContainer: {
     flex: 1,
@@ -260,35 +248,36 @@ const styles = StyleSheet.create({
     bottom: 0,
     right: 0,
     position: "absolute",
-    alignItems: "center",
     overflow: "hidden",
     borderRadius: 6,
     height: "20%",
     width: "25%",
-    backgroundColor: "#ffffff",
+    // marginBottom: 10,
+    backgroundColor: "#ffff00",
     zIndex: 1,
-    borderColor: "#aaaaaa",
-    borderWidth: 0.7,
   },
   remoteVideos: {
     width: "100%",
     flex: 1,
     position: "relative",
-    alignItems: "center",
     overflow: "hidden",
     borderRadius: 6,
     height: 400,
-    backgroundColor: "#ffffff",
+    // borderColor: "#111111",
+    // borderWidth: 4,
   },
   localVideo: {
     height: "100%",
     width: "100%",
-    backgroundColor: "#aaaaaa",
+    backgroundColor: "#009999",
+    zIndex: 999,
   },
   remoteVideo: {
+    // flex: 1,
     height: "100%",
     width: "100%",
-    backgroundColor: "#dddddd",
+    backgroundColor: "#000000",
+    zIndex: -1,
   },
   callSetting: {
     backgroundColor: "#fff0ff",
