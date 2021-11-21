@@ -15,26 +15,7 @@ import {
 import Loader from "../../components/Loader";
 
 const LoginScreen = ({ navigation }) => {
-  const [userPhoneNumber, setuserPhoneNumber] = useState("");
-  const [userPassword, setUserPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [errortext, setErrortext] = useState("");
-  useState({});
-
-  const passwordInputRef = createRef();
-
-  const handleSubmitPress = () => {
-    setErrortext("");
-    if (!userPhoneNumber) {
-      alert("Please fill Email");
-      return;
-    }
-    if (!userPassword) {
-      alert("Please fill Password");
-      return;
-    }
-    setLoading(true);
-  };
 
   return (
     <View style={styles.mainBody}>
