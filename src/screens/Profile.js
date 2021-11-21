@@ -1,17 +1,7 @@
 import React from "react";
-import { View, StyleSheet, ScrollView } from "react-native";
+import { StyleSheet } from "react-native";
 import Friends from "../components/Friends";
-import {
-  Box,
-  Text,
-  Pressable,
-  v3CompatibleTheme,
-  Avatar,
-  HStack,
-  VStack,
-  Spacer,
-  Center,
-} from "native-base";
+import { Box, Text, Pressable, Avatar, HStack, VStack } from "native-base";
 
 export default function Profile() {
   return (

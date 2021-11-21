@@ -5,9 +5,9 @@ import { NativeBaseProvider } from "native-base";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import Navigator from "./screens/Navigator";
-import Calling from "./screens/Calling";
-import CallButton from "./screens/CallButton";
-import PublicChatRoom from "./screens/PublicChatRoom";
+import Calling from "./screens/call/Calling";
+import CallButton from "./screens/call/CallButton";
+import PublicChatRoom from "./screens/call/PublicChatRoom";
 
 import LoginScreen from "./screens/login/Login";
 import RegisterPhoneNumberScreen from "./screens/login/RegisterPhoneNumber";
