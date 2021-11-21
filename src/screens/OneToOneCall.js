@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
-import FeatherIcon from "react-native-vector-icons/Feather";
+// import FeatherIcon from "react-native-vector-icons/Feather";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import Octicons from "react-native-vector-icons/Octicons";
 import { io } from "socket.io-client";
 import {
   RTCPeerConnection,
@@ -14,6 +15,8 @@ import {
   mediaDevices,
   registerGlobals,
 } from "react-native-webrtc";
+import { Button, IconButton, Modal, Icon } from "native-base";
+import ReportModal from "../components/ReportModal";
 
 // 서버 : "http://kitcapstone.codns.com"
 // PC  : "http://localhost"
@@ -35,6 +38,9 @@ export default function OneToOneCall({ navigation }) {
   //const [isFront, setIsFront] = useState(false);
   const [onMic, setOnMic] = useState(false);
   const [onVideo, setOnVideo] = useState(true);
+
+  // 신고 팝업창 활성화 변수
+  const [showModal, setShowModal] = useState(false);
 
   const toggleMic = () => {
     setOnMic(!onMic);
@@ -201,6 +207,9 @@ export default function OneToOneCall({ navigation }) {
     navigation.navigate("Calling");
   };
 
+  const openModal = () => {
+    setShowModal((prev) => !prev);
+  };
   return (
     <View style={styles.container}>
       <View style={styles.videoContainer}>
@@ -236,7 +245,11 @@ export default function OneToOneCall({ navigation }) {
             color="red"
           />
         </TouchableOpacity>
+        <TouchableOpacity onPress={openModal}>
+          <MaterialIcons name="report" size={iconSize} color="red" />
+        </TouchableOpacity>
       </View>
+      <ReportModal showModal={showModal} setShowModal={setShowModal} />
     </View>
   );
 }
