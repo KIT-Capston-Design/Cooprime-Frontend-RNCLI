@@ -32,7 +32,7 @@ const AuthPhoneNumber = (props) => {
     setLoading(true);
 
     // url 교체 필요
-    fetch("http://192.168.231.173:3000/api/user/register/auth/msg", {
+    fetch("http://KITCapstone.iptime.org:3000/api/user/register/auth/msg", {
       method: "POST",
       body: JSON.stringify({
         phone_number: phone_number,
@@ -50,9 +50,6 @@ const AuthPhoneNumber = (props) => {
 
         // If server response message same as Data Matched
         if (responseJson.status === "success") {
-          console.log(responseJson);
-          console.log(responseJson.token);
-          console.log("success");
           AsyncStorage.setItem("token", responseJson.token);
           props.navigation.replace("HomeScreen");
         } else {

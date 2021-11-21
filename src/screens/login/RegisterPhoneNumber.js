@@ -12,7 +12,6 @@ import {
 } from "react-native";
 
 import Loader from "../../components/Loader";
-import axios from "axios";
 
 const RegisterPhoneNumber = (props) => {
   const [userPhoneNumber, setUserPhoneNumber] = useState("");
@@ -30,9 +29,11 @@ const RegisterPhoneNumber = (props) => {
     }
     //Show Loader
     setLoading(true);
+
     // url 교체 필요
-    // const url = "https://127.0.0.1:3000/api/user/req/auth/msg";
-    fetch("http://192.168.231.173:3000/api/user/req/auth/msg", {
+    // const url = "http://KITCapstone.iptime.org:3000/api/user/req/auth/msg";
+    // url 환경 변수로 등록 못하나
+    fetch("http://KITCapstone.iptime.org:3000/api/user/req/auth/msg", {
       method: "POST",
       body: JSON.stringify({
         phone_number: userPhoneNumber,
@@ -62,6 +63,7 @@ const RegisterPhoneNumber = (props) => {
       });
   };
 
+  // state 변경시 동작
   if (isRegistraionSuccess) {
     props.navigation.navigate("AuthPhoneNumberScreen", {
       phone_number: userPhoneNumber,
