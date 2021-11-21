@@ -32,7 +32,7 @@ const RegisterPhoneNumber = (props) => {
     setLoading(true);
     // url 교체 필요
     // const url = "https://127.0.0.1:3000/api/user/req/auth/msg";
-    fetch("http://192.168.0.11:3000/api/user/req/auth/msg", {
+    fetch("http://192.168.231.173:3000/api/user/req/auth/msg", {
       method: "POST",
       body: JSON.stringify({
         phone_number: userPhoneNumber,

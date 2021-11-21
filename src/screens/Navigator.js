@@ -112,9 +112,9 @@ export const MainNavigator = () => {
 
 export function Navigator() {
   return (
-    <NavigationContainer>
+    <>
       {/* 로그인 기능 구현되면 아래의 true를 로그인 상태로 변경 */}
       <MainNavigator />
-    </NavigationContainer>
+    </>
   );
 }
