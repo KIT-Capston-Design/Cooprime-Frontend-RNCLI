@@ -60,6 +60,7 @@ export default function PublicChatRoom() {
                 navigation.navigate("component", { name: comp.name })
               }
               _hover={{ bg: "coolGray.300" }}
+              장
             >
               <HStack space={3} py={1} alignItems="center" w="100%">
                 <Box mr={4}>

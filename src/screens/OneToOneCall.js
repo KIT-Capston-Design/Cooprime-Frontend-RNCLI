@@ -23,6 +23,8 @@ import ReportModal from "../components/ReportModal";
 // 로컬 : "http://192.168.0.9"
 // 승형PC : "aitta.iptime.org"
 
+// const SERVER_DOMAIN = "http://123.213.225.243";
+
 const SERVER_DOMAIN = "http://KITCapstone.iptime.org";
 const SERVER_PORT = "3000";
 
