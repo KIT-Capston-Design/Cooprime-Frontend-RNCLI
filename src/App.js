@@ -8,6 +8,7 @@ import RegisterPhoneNumberScreen from "./screens/login/RegisterPhoneNumber";
 import AuthPhoneNumberScreen from "./screens/login/AuthPhoneNumber";
 import SplashScreen from "./screens/login/Splash";
 import Home from "./screens/Home";
+import PublicGroupCall from "./screens/call/PublicGroupCall";
 
 const Stack = createStackNavigator();
 
@@ -55,7 +56,7 @@ export default App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="HomeScreen"
+        initialRouteName="PublicGroupCall"
         // Hiding header
         screenOptions={{ headerShown: false }}
       >
@@ -79,6 +80,7 @@ export default App = () => {
           // Hiding header for Navigation Drawer
           // options={{ headerShown: false }}
         />
+        <Stack.Screen name="PublicGroupCall" component={PublicGroupCall} />
       </Stack.Navigator>
     </NavigationContainer>
   );
