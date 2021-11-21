@@ -9,9 +9,9 @@ import {
   Keyboard,
   TouchableOpacity,
   KeyboardAvoidingView,
+  AsyncStorage,
 } from "react-native";
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import Loader from "../../components/Loader";
 
 const LoginScreen = ({ navigation }) => {

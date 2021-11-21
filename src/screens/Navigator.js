@@ -95,7 +95,7 @@ function HomeTabs() {
   );
 }
 
-export const MainNavigator = () => {
+export default function Navigator() {
   return (
     <Stack.Navigator
       initialRouteName="Home"
@@ -105,14 +105,5 @@ export const MainNavigator = () => {
       <Stack.Screen name="OneToOne" component={OneToOneCall} />
       <Stack.Screen name="Group" component={GroupCall} />
     </Stack.Navigator>
-  );
-};
-
-export function Navigator() {
-  return (
-    <>
-      {/* 로그인 기능 구현되면 아래의 true를 로그인 상태로 변경 */}
-      <MainNavigator />
-    </>
   );
 }

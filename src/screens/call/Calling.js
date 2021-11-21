@@ -1,12 +1,5 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-// import {MaterialCommunityIcons} from '@expo/vector-icons';
-// import OneToOneCall from './OneToOneCall';
-// import GroupCall from './GroupCall';
-// import {NavigationContainer} from '@react-navigation/native';
-// import {createNativeStackNavigator} from '@react-navigation/native-stack';
-
-// const Stack = createNativeStackNavigator();
 
 export default function Calling({ navigation }) {
   const startOneToOneCall = () => {
@@ -62,18 +55,3 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
-// import React, { Component } from "react";
-// import { View, Animated, Text } from "react-native";
-// import CallButton from "./CallButton";
-// import { Center } from "native-base";
-
-// export default function Calling() {
-//   return (
-//     <>
-//       <Center>
-//         <CallButton />
-//         <Text>asdf</Text>
-//       </Center>
-//     </>
-//   );
-// }

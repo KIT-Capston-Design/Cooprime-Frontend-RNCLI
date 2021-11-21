@@ -10,10 +10,10 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  AsyncStorage,
 } from "react-native";
 
 import Loader from "../../components/Loader";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const AuthPhoneNumber = (props) => {
   const [authNumber, setAuthNumber] = useState("");

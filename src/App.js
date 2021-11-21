@@ -1,13 +1,7 @@
 import React from "react";
 
-import { StatusBar } from "react-native";
-import { NativeBaseProvider } from "native-base";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import Navigator from "./screens/Navigator";
-import Calling from "./screens/call/Calling";
-import CallButton from "./screens/call/CallButton";
-import PublicChatRoom from "./screens/call/PublicChatRoom";
 
 import LoginScreen from "./screens/login/Login";
 import RegisterPhoneNumberScreen from "./screens/login/RegisterPhoneNumber";
@@ -60,26 +54,30 @@ const Auth = () => {
 export default App = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="SplashScreen">
+      <Stack.Navigator
+        initialRouteName="HomeScreen"
+        // Hiding header
+        screenOptions={{ headerShown: false }}
+      >
         {/* SplashScreen which will come once for 5 Seconds */}
         <Stack.Screen
           name="SplashScreen"
           component={SplashScreen}
-          // Hiding header for Splash Screen
-          options={{ headerShown: false }}
+          // // Hiding header for Splash Screen
+          // options={{ headerShown: false }}
         />
         {/* Auth Navigator: Include Login and Signup */}
         <Stack.Screen
           name="Auth"
           component={Auth}
-          options={{ headerShown: false }}
+          // options={{ headerShown: false }}
         />
         {/* Navigation Drawer as a landing page */}
         <Stack.Screen
           name="HomeScreen"
           component={Home}
           // Hiding header for Navigation Drawer
-          options={{ headerShown: false }}
+          // options={{ headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>
