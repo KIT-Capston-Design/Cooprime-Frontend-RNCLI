@@ -14,13 +14,13 @@ const SplashScreen = ({ navigation }) => {
   useEffect(() => {
     setTimeout(() => {
       setAnimating(false);
-      AsyncStorage.removeItem("token");
+      // AsyncStorage.removeItem("token");
       //Check if user_id is set or not
       //If not then send for Authentication
       //else send to Home Screen
       // jwt token..
       AsyncStorage.getItem("token").then((value) =>
-        navigation.replace(value === null ? "Auth" : "ProfileScreen")
+        navigation.replace(value === null ? "Auth" : "HomeScreen")
       );
     }, 1000);
   }, []);

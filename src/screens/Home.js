@@ -16,11 +16,10 @@ import {
 } from "react-native";
 import { MainNavigator } from "./Navigator";
 
-export default function Test() {
+export default function Home() {
   return (
     <NativeBaseProvider>
       <StatusBar barStyle="default" />
-      <Text>Hello</Text>
       <MainNavigator />
     </NativeBaseProvider>
   );

@@ -32,7 +32,7 @@ const AuthPhoneNumber = (props) => {
     setLoading(true);
 
     // url 교체 필요
-    fetch("http://192.168.0.11:3000/api/user/register/auth/msg", {
+    fetch("http://192.168.231.173:3000/api/user/register/auth/msg", {
       method: "POST",
       body: JSON.stringify({
         phone_number: phone_number,
@@ -54,7 +54,7 @@ const AuthPhoneNumber = (props) => {
           console.log(responseJson.token);
           console.log("success");
           AsyncStorage.setItem("token", responseJson.token);
-          props.navigation.replace("ProfileScreen");
+          props.navigation.replace("HomeScreen");
         } else {
           setErrortext(responseJson.msg);
         }

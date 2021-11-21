@@ -12,8 +12,7 @@ import LoginScreen from "./screens/login/Login";
 import RegisterPhoneNumberScreen from "./screens/login/RegisterPhoneNumber";
 import AuthPhoneNumberScreen from "./screens/login/AuthPhoneNumber";
 import SplashScreen from "./screens/login/Splash";
-import Profile from "./screens/Profile";
-import Test from "./screens/Test";
+import Home from "./screens/Home";
 
 const Stack = createStackNavigator();
 
@@ -76,8 +75,8 @@ export default App = () => {
         />
         {/* Navigation Drawer as a landing page */}
         <Stack.Screen
-          name="ProfileScreen"
-          component={Test}
+          name="HomeScreen"
+          component={Home}
           // Hiding header for Navigation Drawer
           options={{ headerShown: false }}
         />
@@ -85,12 +84,3 @@ export default App = () => {
     </NavigationContainer>
   );
 };
-
-// export default function App() {
-//   return (
-//     <NativeBaseProvider>
-//       <StatusBar barStyle="default" />
-//       <Navigator />
-//     </NativeBaseProvider>
-//   );
-// }
