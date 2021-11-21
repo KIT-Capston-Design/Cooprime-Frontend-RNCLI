@@ -27,6 +27,7 @@ const SERVER_PORT = "3000";
 
 let socket;
 let realRoomName;
+let myStream;
 
 export default function OneToOneCall({ navigation }) {
   const iconSize = 60;
@@ -139,13 +140,14 @@ export default function OneToOneCall({ navigation }) {
   };
 
   const initCall = async () => {
-    console.log("initCall");
+    console.log("initCall Start");
 
     socket.emit("random_one_to_one");
     console.log("sent random_one_to_one");
 
     await getMedia();
     //await getCamera();
+    console.log("initCall End");
   };
 
   const connectPeer = () => {
@@ -153,20 +155,29 @@ export default function OneToOneCall({ navigation }) {
   };
 
   const getMedia = async () => {
-    console.log("getMedia start");
-    const myStream = await mediaDevices.getUserMedia({
-      audio: true,
-      video: {
-        mandatory: {
-          minWidth: 500, // Provide your own width, height and frame rate here
-          minHeight: 300,
-          minFrameRate: 30,
+    console.log("getMedia() Start");
+    await mediaDevices
+      .getUserMedia({
+        audio: true,
+        video: {
+          mandatory: {
+            minWidth: 500, // Provide your own width, height and frame rate here
+            minHeight: 300,
+            minFrameRate: 30,
+          },
+          facingMode: "user",
+          // optional: videoSourceId ? expo start --localhost --android[{ sourceId: videoSourceId }] : [],
         },
-        facingMode: "user",
-        // optional: videoSourceId ? expo start --localhost --android[{ sourceId: videoSourceId }] : [],
-      },
-    });
-    console.log("get mystream");
+      })
+      .then((stream) => {
+        // 스트림 얻음
+        myStream = stream;
+        console.log("get myStream");
+      })
+      .catch((error) => {
+        // 미디어 스트림 에러
+        console.log(error);
+      });
 
     // Got stream!room
     // setLocalStream(myStream);
@@ -174,6 +185,7 @@ export default function OneToOneCall({ navigation }) {
 
     // setup stream listening
     myPeerConnection.addStream(myStream);
+    console.log("getMedia() End");
   };
 
   const handleDisconnectBtn = () => {
