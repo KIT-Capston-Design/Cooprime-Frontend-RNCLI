@@ -76,6 +76,7 @@ export const GroupCallList = () => {
   };
 
   const clickEventListener = (item) => {
+    // 채팅방 접속 로직
     Alert.alert(
       "이제 채팅방으로 들어가면 됩니다.",
       "디비 접속해서 공개채팅방 정보 읽어오기 등의 로직은 내일부터 또 짜겠습니다." +
@@ -91,16 +92,9 @@ export const GroupCallList = () => {
           clickEventListener(item);
         }}
       >
-        {/* <Image style={styles.image} source={{ uri: item.image }} /> */}
         <View style={styles.cardContent}>
           <Text style={styles.name}>{item.name}</Text>
           <Text style={styles.count}>{item.count}</Text>
-          {/* <TouchableOpacity
-            style={styles.followButton}
-            onPress={() => clickEventListener(item)}
-          >
-            <Text style={styles.followButtonText}>Explore now</Text>
-          </TouchableOpacity> */}
         </View>
       </TouchableOpacity>
     );
@@ -127,7 +121,6 @@ export const GroupCallList = () => {
         onEndReachedThreshold={0.8}
         onEndReached={onEndReached}
       />
-      r
     </LinearGradient>
   );
 };
@@ -135,7 +128,7 @@ export const GroupCallList = () => {
 export default function PublicGroupCall() {
   const createGroupCall = () => {
     console.log("??");
-    Alert.alert("새로운 통화방 생성", "로직은 createGroupCall 에");
+    Alert.alert("새로운 통화방 생성", "로직은 createGroupCall에 작성");
     // 통화방 이름 생성(= 사용자 이름, 사용자는 한 통화방만 생성할 수 있으니까)
     // 서버에 통화방 생성 요청
     // GroupCall 로직을 좀 읽어볼게요.. ㅠ
