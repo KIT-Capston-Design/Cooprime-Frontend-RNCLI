@@ -4,55 +4,48 @@ import {
   StyleSheet,
   Text,
   View,
-  Image,
   TouchableOpacity,
   FlatList,
-  Dimensions,
   Alert,
-  ScrollView,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import LinearGradient from "react-native-linear-gradient";
+import InputModal from "../../components/InputModal";
 
 export const GroupCallList = () => {
   const [data, setData] = useState([
     {
       id: 1,
-      name: "Comunity",
-      image: "https://img.icons8.com/clouds/100/000000/groups.png",
-      count: 124.711,
+      title: "아무나 들어오세요",
+      count: 1,
     },
     {
       id: 2,
-      name: "Housing",
-      image: "https://img.icons8.com/color/100/000000/real-estate.png",
-      count: 234.722,
+      title: "재밌게 노실 분만",
+      count: 2,
     },
     {
       id: 3,
-      name: "Jobs",
-      image: "https://img.icons8.com/color/100/000000/find-matching-job.png",
-      count: 324.723,
+      title: "선착순",
+      count: 4,
     },
     {
       id: 4,
-      name: "Personal",
-      image: "https://img.icons8.com/clouds/100/000000/employee-card.png",
-      count: 154.573,
+      title: "고3 모여라",
+      count: 3,
     },
     {
       id: 5,
-      name: "For sale",
-      image: "https://img.icons8.com/color/100/000000/land-sales.png",
-      count: 124.678,
+      title: "대학생 모여라",
+      count: 2,
     },
     {
       id: 6,
-      name: "asdfasdf asdf",
-      image: "https://img.icons8.com/clouds/100/000000/groups.png",
-      count: 124.123123,
+      title: "커피 좋아하는 사람~!",
+      count: 1,
     },
   ]);
+
   const [offset, setOffSet] = useState(0);
   const [loading, setLoading] = useState(false);
 
@@ -79,8 +72,8 @@ export const GroupCallList = () => {
     // 채팅방 접속 로직
     Alert.alert(
       "이제 채팅방으로 들어가면 됩니다.",
-      "디비 접속해서 공개채팅방 정보 읽어오기 등의 로직은 내일부터 또 짜겠습니다." +
-        item.name
+      "디비 접속해서 공개채팅방 정보 읽어오기 등의 로직은 내일부터 또 짜겠습니다.\n - " +
+        item.title
     );
   };
 
@@ -93,8 +86,8 @@ export const GroupCallList = () => {
         }}
       >
         <View style={styles.cardContent}>
-          <Text style={styles.name}>{item.name}</Text>
-          <Text style={styles.count}>{item.count}</Text>
+          <Text style={styles.title}>{item.title}</Text>
+          <Text style={styles.count}>{item.count} / 4</Text>
         </View>
       </TouchableOpacity>
     );
@@ -110,7 +103,7 @@ export const GroupCallList = () => {
 
   return (
     <LinearGradient
-      colors={["#f5f3ff", "#ddd6fe", "#a78bfa"]}
+      colors={["#a78bfa", "#ddd6fe", "#f5f3ff"]}
       style={styles.container}
     >
       <FlatList
@@ -126,9 +119,12 @@ export const GroupCallList = () => {
 };
 
 export default function PublicGroupCall() {
+  // 신고 팝업창 활성화 변수
+  const [showModal, setShowModal] = useState(false);
+
   const createGroupCall = () => {
-    console.log("??");
-    Alert.alert("새로운 통화방 생성", "로직은 createGroupCall에 작성");
+    setShowModal((prev) => !prev);
+    // Alert.alert("새로운 통화방 생성", "로직은 createGroupCall에 작성");
     // 통화방 이름 생성(= 사용자 이름, 사용자는 한 통화방만 생성할 수 있으니까)
     // 서버에 통화방 생성 요청
     // GroupCall 로직을 좀 읽어볼게요.. ㅠ
@@ -140,6 +136,7 @@ export default function PublicGroupCall() {
       <Box position="relative" h={0} w="100%">
         <Fab
           // colorScheme="violet" 이후에 색상 변경할게요
+          colorScheme="indigo"
           onPress={createGroupCall}
           position="absolute"
           size="sm"
@@ -152,6 +149,13 @@ export default function PublicGroupCall() {
           }
         />
       </Box>
+      <InputModal
+        hd="통화방 생성"
+        bd="이름"
+        btn="생성"
+        showModal={showModal}
+        setShowModal={setShowModal}
+      />
     </NativeBaseProvider>
   );
 }
@@ -165,17 +169,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   cardContent: {
-    marginLeft: 20,
-    marginTop: 10,
+    marginLeft: 15,
+    marginVertical: 5,
   },
-  image: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
-    borderWidth: 2,
-    borderColor: "#ebf0f7",
-  },
-
   card: {
     shadowColor: "#00000021",
     shadowOffset: {
@@ -194,8 +190,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     borderRadius: 30,
   },
-
-  name: {
+  title: {
     fontSize: 18,
     flex: 1,
     alignSelf: "center",
@@ -205,24 +200,6 @@ const styles = StyleSheet.create({
   count: {
     fontSize: 14,
     flex: 1,
-    alignSelf: "center",
     color: "#6666ff",
-  },
-  followButton: {
-    marginTop: 10,
-    height: 35,
-    width: 100,
-    padding: 10,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 30,
-    backgroundColor: "white",
-    borderWidth: 1,
-    borderColor: "#dcdcdc",
-  },
-  followButtonText: {
-    color: "#dcdcdc",
-    fontSize: 12,
   },
 });
