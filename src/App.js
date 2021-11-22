@@ -56,7 +56,7 @@ export default App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="SplashScreen"
+        initialRouteName="HomeScreen"
         // Hiding header
         screenOptions={{ headerShown: false }}
       >
