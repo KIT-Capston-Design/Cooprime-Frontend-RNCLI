@@ -1,7 +1,6 @@
 import React from "react";
 
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
@@ -10,16 +9,15 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 // HomeTabs
 import Header from "../layouts/Header";
-import OneToOneCall from "./OneToOneCall";
-import GroupCall from "./GroupCall";
-import Calling from "./Calling";
-import Chatting from "./ChatRoomList";
+import OneToOneCall from "./call/OneToOneCall";
+import GroupCall from "./call/GroupCall";
+import Calling from "./call/Calling";
 import Profile from "./Profile";
 import Alarm from "./Alarm";
 
 // ChatStacks
-import ChatRoomList from "./ChatRoomList";
-import ChatRoom from "./ChatRoom";
+import ChatRoomList from "./chat/ChatRoomList";
+import ChatRoom from "./chat/ChatRoom";
 
 const HomeTab = createBottomTabNavigator();
 const ChatStack = createNativeStackNavigator();
@@ -97,7 +95,7 @@ function HomeTabs() {
   );
 }
 
-export const MainNavigator = () => {
+export default function Navigator() {
   return (
     <Stack.Navigator
       initialRouteName="Home"
@@ -107,14 +105,5 @@ export const MainNavigator = () => {
       <Stack.Screen name="OneToOne" component={OneToOneCall} />
       <Stack.Screen name="Group" component={GroupCall} />
     </Stack.Navigator>
-  );
-};
-
-export function Navigator() {
-  return (
-    <>
-      {/* 로그인 기능 구현되면 아래의 true를 로그인 상태로 변경 */}
-      <MainNavigator />
-    </>
   );
 }

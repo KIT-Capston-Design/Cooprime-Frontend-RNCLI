@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
-// import FeatherIcon from "react-native-vector-icons/Feather";
+import ReportModal from "../../components/ReportModal";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import Octicons from "react-native-vector-icons/Octicons";
 import { io } from "socket.io-client";
 import {
   RTCPeerConnection,
@@ -15,8 +14,6 @@ import {
   mediaDevices,
   registerGlobals,
 } from "react-native-webrtc";
-import { Button, IconButton, Modal, Icon } from "native-base";
-import ReportModal from "../components/ReportModal";
 
 // 서버 : "http://kitcapstone.codns.com"
 // PC  : "http://localhost"
