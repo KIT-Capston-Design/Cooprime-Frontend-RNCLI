@@ -32,7 +32,7 @@ const AuthPhoneNumber = (props) => {
     setLoading(true);
 
     // url 교체 필요
-    fetch("http://KITCapstone.iptime.org:3000/api/user/register/auth/msg", {
+    fetch("http://192.168.231.173:3000/api/login/register/auth/msg", {
       method: "POST",
       body: JSON.stringify({
         phone_number: phone_number,
