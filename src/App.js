@@ -56,7 +56,7 @@ export default App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="SplashScreen"
+        initialRouteName="PublicGroupCall"
         // Hiding header
         screenOptions={{ headerShown: false }}
       >
