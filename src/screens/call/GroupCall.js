@@ -69,16 +69,6 @@ export default function GroupCall({ navigation }) {
     setOnVideo(!onVideo);
   };
 
-  // const handleDisconnectBtn = () => {
-  // 	/* 피어간 연결 종료 로직 */
-  // 	console.log("socket disconnect");
-
-  // 	/*	로직 필요	*/
-  // 	// 메인 화면으로 이동
-  // 	navigation.navigate("Calling");
-  // 	console.log("handleDisconnectBtn");
-  // };
-
   const handleDisconnectBtn = () => {
     /* 피어간 연결 종료 로직 */
     console.log("socket disconnect");
@@ -100,6 +90,7 @@ export default function GroupCall({ navigation }) {
 
     navigation.navigate("Calling");
   };
+
   useEffect(async () => {
     console.log("-----------------useEffect----------------");
 

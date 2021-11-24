@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import ReportModal from "../../components/ReportModal";
+import Loading from "../../components/Loading";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { io } from "socket.io-client";
@@ -41,6 +42,8 @@ export default function OneToOneCall({ navigation }) {
 
   // 신고 팝업창 활성화 변수
   const [showModal, setShowModal] = useState(false);
+  // 통화 화면 들어가기전 로딩 화면 ON/OFF 변수
+  const [loading, setLoading] = useState(true);
 
   const toggleMic = () => {
     setOnMic(!onMic);
@@ -88,6 +91,11 @@ export default function OneToOneCall({ navigation }) {
       await setRemoteStream(data.stream);
       setTimeout(() => setLocalStream(tmpStream), 1000);
     };
+
+    if (remoteStream != undefined) {
+      console.log("통화 화면으로 연결");
+      setLoading(false);
+    }
   }, []);
 
   const initSocket = async () => {
@@ -210,46 +218,56 @@ export default function OneToOneCall({ navigation }) {
   const openModal = () => {
     setShowModal((prev) => !prev);
   };
+
   return (
     <View style={styles.container}>
-      <View style={styles.videoContainer}>
-        <View style={styles.remoteVideos}>
-          <RTCView
-            streamURL={remoteStream.toURL()}
-            style={styles.remoteVideo}
-          />
-        </View>
-        <View style={styles.localVideos}>
-          <RTCView streamURL={localStream.toURL()} style={styles.localVideo} />
-        </View>
-      </View>
-      <View style={styles.callSetting}>
-        <TouchableOpacity onPress={toggleMic}>
-          <MaterialCommunityIcons
-            name={onMic ? "volume-mute" : "volume-source"}
-            size={iconSize}
-            color={onMic ? "grey" : "black"}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={toggleVideo}>
-          <MaterialIcons
-            name={onVideo ? "videocam" : "videocam-off"}
-            size={iconSize}
-            color={onVideo ? "#05ff05" : "red"}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={handleDisconnectBtn}>
-          <MaterialCommunityIcons
-            name="phone-off"
-            size={iconSize}
-            color="red"
-          />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={openModal}>
-          <MaterialIcons name="report" size={iconSize} color="red" />
-        </TouchableOpacity>
-      </View>
-      <ReportModal showModal={showModal} setShowModal={setShowModal} />
+      {loading ? (
+        <Loading />
+      ) : (
+        <>
+          <View style={styles.videoContainer}>
+            <View style={styles.remoteVideos}>
+              <RTCView
+                streamURL={remoteStream.toURL()}
+                style={styles.remoteVideo}
+              />
+            </View>
+            <View style={styles.localVideos}>
+              <RTCView
+                streamURL={localStream.toURL()}
+                style={styles.localVideo}
+              />
+            </View>
+          </View>
+          <View style={styles.callSetting}>
+            <TouchableOpacity onPress={toggleMic}>
+              <MaterialCommunityIcons
+                name={onMic ? "volume-mute" : "volume-source"}
+                size={iconSize}
+                color={onMic ? "grey" : "black"}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={toggleVideo}>
+              <MaterialIcons
+                name={onVideo ? "videocam" : "videocam-off"}
+                size={iconSize}
+                color={onVideo ? "#05ff05" : "red"}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleDisconnectBtn}>
+              <MaterialCommunityIcons
+                name="phone-off"
+                size={iconSize}
+                color="red"
+              />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={openModal}>
+              <MaterialIcons name="report" size={iconSize} color="red" />
+            </TouchableOpacity>
+          </View>
+          <ReportModal showModal={showModal} setShowModal={setShowModal} />
+        </>
+      )}
     </View>
   );
 }
@@ -257,7 +275,7 @@ export default function OneToOneCall({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#ffff00",
+    backgroundColor: "#ede9fe",
     // alignItems: "center",
     // justifyContent: "center",
     // flexDirection: "row",
