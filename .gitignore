@@ -312,3 +312,8 @@ Temporary Items
 .apdisk
 
 # End of https://www.toptal.com/developers/gitignore/api/reactnative
+
+
+.orig
+src/components/InputModal.js.orig
+src/screens/call/PublicGroupCall.js.orig
