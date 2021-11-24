@@ -23,7 +23,8 @@ import {
 
 // const SERVER_DOMAIN = "http://123.213.225.243";
 
-const SERVER_DOMAIN = "http://KITCapstone.iptime.org";
+// const SERVER_DOMAIN = "http://KITCapstone.iptime.org";
+const SERVER_DOMAIN = "http://127.0.0.1";
 const SERVER_PORT = "3000";
 
 let socket;

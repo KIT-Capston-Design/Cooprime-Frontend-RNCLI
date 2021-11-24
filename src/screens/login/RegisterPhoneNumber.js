@@ -33,7 +33,7 @@ const RegisterPhoneNumber = (props) => {
     // url 교체 필요
     // const url = "http://KITCapstone.iptime.org:3000/api/user/req/auth/msg";
     // url 환경 변수로 등록 못하나
-    fetch("http://KITCapstone.iptime.org:3000/api/user/req/auth/msg", {
+    fetch("http://192.168.231.173:3000/api/login/req/auth/msg", {
       method: "POST",
       body: JSON.stringify({
         phone_number: userPhoneNumber,

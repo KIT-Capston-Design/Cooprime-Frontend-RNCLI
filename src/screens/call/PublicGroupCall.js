@@ -121,13 +121,29 @@ export const GroupCallList = () => {
 export default function PublicGroupCall() {
   // 신고 팝업창 활성화 변수
   const [showModal, setShowModal] = useState(false);
+  // + 버튼 클릭 후, 만든 자신의 공개 통화방
+  const [myRoom, setMyRoom] = useState({
+    name: "",
+    count: 0,
+    tags: [],
+  });
 
   const createGroupCall = () => {
+    // 공개통화방 생성창 띄우기
     setShowModal((prev) => !prev);
-    // Alert.alert("새로운 통화방 생성", "로직은 createGroupCall에 작성");
-    // 통화방 이름 생성(= 사용자 이름, 사용자는 한 통화방만 생성할 수 있으니까)
-    // 서버에 통화방 생성 요청
-    // GroupCall 로직을 좀 읽어볼게요.. ㅠ
+  };
+
+  const getRoomInfo = (roomInfo) => {
+    console.log("getRoomInfo() 시작");
+
+    console.log("getRoomInfo ", roomInfo);
+    setMyRoom(roomInfo);
+
+    console.log("getRoomInfo() 종료");
+
+    // 하위 컴포넌트에게 전달받은 myRoom 데이터로
+    // 서버에 공개통화방 생성 요청
+    /*  createGroupCall()?  createMyRoom()?  */
   };
 
   return (
@@ -151,10 +167,10 @@ export default function PublicGroupCall() {
       </Box>
       <InputModal
         hd="통화방 생성"
-        bd="이름"
         btn="생성"
         showModal={showModal}
         setShowModal={setShowModal}
+        sendRoomInfo={getRoomInfo}
       />
     </NativeBaseProvider>
   );
