@@ -14,6 +14,7 @@ import InputModal from "../../components/InputModal";
 
 ////
 import { io } from "socket.io-client";
+import { Value } from "react-native-reanimated";
 
 ////
 
@@ -88,13 +89,18 @@ export const GroupCallList = () => {
 		//   });
 	};
 
-	const clickEventListener = (item) => {
-		// 채팅방 접속 로직
-		Alert.alert(
-			"이제 채팅방으로 들어가면 됩니다.",
-			"디비 접속해서 공개채팅방 정보 읽어오기 등의 로직은 내일부터 또 짜겠습니다.\n - " +
-				item.roomName
-		);
+	const roomItemTouchHandler = (item) => {
+		//채팅방 입장
+		socket.emit("ogc_enter_room", item.roomId, isSucc);
+	};
+
+	const isSucc = (val) => {
+		if (val) {
+			Alert.alert("채팅방 입장 성공");
+			// 차후 대기화면으로 이동하여 webRTC 연결 설정하는 코드 필요
+		} else {
+			Alert.alert("채팅방 입장 실패");
+		}
 	};
 
 	const renderItem = ({ item }) => {
@@ -102,7 +108,7 @@ export const GroupCallList = () => {
 			<TouchableOpacity
 				style={styles.card}
 				onPress={() => {
-					clickEventListener(item);
+					roomItemTouchHandler(item);
 				}}
 			>
 				<View style={styles.cardContent}>
