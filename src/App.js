@@ -8,7 +8,9 @@ import RegisterPhoneNumberScreen from "./screens/login/RegisterPhoneNumber";
 import AuthPhoneNumberScreen from "./screens/login/AuthPhoneNumber";
 import SplashScreen from "./screens/login/Splash";
 import Home from "./screens/Home";
-import PublicGroupCall from "./screens/call/PublicGroupCall";
+import OpenGroupCallList from "./screens/call/OpenGroupCallList";
+import OpenGroupCallScreen from "./screens/call/OpenGroupCallScreen";
+import Test from "./screens/call/Test";
 
 const Stack = createStackNavigator();
 
@@ -56,7 +58,7 @@ export default App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="PublicGroupCall"
+        initialRouteName="OpenGroupCallScreen"
         // Hiding header
         screenOptions={{ headerShown: false }}
       >
@@ -67,7 +69,12 @@ export default App = () => {
         {/* Navigation Drawer as a landing page */}
         <Stack.Screen name="HomeScreen" component={Home} />
         {/* 공개 그룹 통화 테스트하려면  initialRouteName="PublicGroupCall"  로 변경*/}
-        <Stack.Screen name="PublicGroupCall" component={PublicGroupCall} />
+        <Stack.Screen name="OpenGroupCallList" component={OpenGroupCallList} />
+        <Stack.Screen
+          name="OpenGroupCallScreen"
+          component={OpenGroupCallScreen}
+        />
+        <Stack.Screen name="Test" component={Test} />
       </Stack.Navigator>
     </NavigationContainer>
   );
