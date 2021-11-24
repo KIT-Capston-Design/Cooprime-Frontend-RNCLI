@@ -35,26 +35,45 @@ export const GroupCallList = () => {
 			});
 
 			//socket code
-
-			socket.emit("ogc_observe_roomlist");
-
+			socket.onAny((event) => {
+				console.log("receive", event);
+			});
 			getData();
 
 			console.log("socket initialized");
+
+			// 방 목록 구독 요청
+			socket.emit("ogc_observe_roomlist");
+			console.log("emit ogc_observe_roomlist");
+
+			// 소켓 이벤트 등록
+			socket.on("ogc_roomlist", (roomInfList) => {
+				roomInfList = JSON.parse(roomInfList);
+				console.log("roomInfList", roomInfList);
+				setData(roomInfList);
+			});
+
+			return () => {
+				// unmount (화면 이탈 시)
+				// 방 목록 구독 탈퇴 요청
+				socket.emit("ogc_unobserve_roomlist");
+				console.log("emit ogc_unobserve_roomlist");
+			};
 		})();
+
 		//
 	}, []);
 
 	const getData = () => {
 		setLoading(true);
 
-		setData([
-			{
-				id: 1,
-				title: "TEST",
-				count: 1,
-			},
-		]);
+		// setData([
+		// 	{
+		// 		id: 1,
+		// 		title: "TEST",
+		// 		count: 1,
+		// 	},
+		// ]);
 
 		// 공개 채팅방 정보 읽어오기
 		// fetch("http://jsonplaceholder.typicode.com/posts")
@@ -74,7 +93,7 @@ export const GroupCallList = () => {
 		Alert.alert(
 			"이제 채팅방으로 들어가면 됩니다.",
 			"디비 접속해서 공개채팅방 정보 읽어오기 등의 로직은 내일부터 또 짜겠습니다.\n - " +
-				item.title
+				item.roomName
 		);
 	};
 
@@ -87,8 +106,8 @@ export const GroupCallList = () => {
 				}}
 			>
 				<View style={styles.cardContent}>
-					<Text style={styles.title}>{item.title}</Text>
-					<Text style={styles.count}>{item.count} / 4</Text>
+					<Text style={styles.title}>{item.roomName}</Text>
+					<Text style={styles.count}>{item.cnt} / 4</Text>
 				</View>
 			</TouchableOpacity>
 		);
@@ -111,7 +130,7 @@ export const GroupCallList = () => {
 				style={styles.contentList}
 				data={data}
 				renderItem={renderItem}
-				keyExtractor={(item) => String(item.id)}
+				keyExtractor={(item) => String(item.roomId)}
 				onEndReachedThreshold={0.8}
 				onEndReached={onEndReached}
 			/>
