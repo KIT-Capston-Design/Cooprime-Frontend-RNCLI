@@ -43,19 +43,21 @@ export default function InputModal({
 	};
 
 	const createPublicCall = () => {
-		console.log("공개 통화방 생성 시작");
+		// 태그명만 추출
+		let temp = [];
+
+		tags.forEach((tag) => {
+			temp.push(tag.name);
+		});
 
 		const tmpRoom = {
-			name: text,
-			count: 1,
-			tags: tags,
+			roomName: text,
+			tags: temp,
 		};
 		// 상위 컴포넌트(PublicGroupCall.js)에게 사용자가 입력한 방 생성 정보 전달
 		sendRoomInfo(tmpRoom);
 		reset();
 		setShowModal(!showModal); //
-
-		console.log("공개 통화방 생성 종료");
 	};
 
 	const reset = () => {

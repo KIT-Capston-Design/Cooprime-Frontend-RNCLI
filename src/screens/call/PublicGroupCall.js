@@ -15,6 +15,7 @@ import InputModal from "../../components/InputModal";
 ////
 import { io } from "socket.io-client";
 import { Value } from "react-native-reanimated";
+import { ControlledPropUpdatedSelectedItem } from "native-base/lib/typescript/components/composites/Typeahead/useTypeahead/types";
 
 ////
 
@@ -145,31 +146,15 @@ export const GroupCallList = () => {
 };
 
 export default function PublicGroupCall() {
-	// 신고 팝업창 활성화 변수
+	//공개통화방 display 변수
 	const [showModal, setShowModal] = useState(false);
-	// + 버튼 클릭 후, 만든 자신의 공개 통화방
-	const [myRoom, setMyRoom] = useState({
-		name: "",
-		count: 0,
-		tags: [],
-	});
 
-	const createGroupCall = () => {
-		// 공개통화방 생성창 띄우기
-		setShowModal((prev) => !prev);
-	};
-
-	const getRoomInfo = (roomInfo) => {
-		console.log("getRoomInfo() 시작");
-
-		console.log("getRoomInfo ", roomInfo);
-		setMyRoom(roomInfo);
-
-		console.log("getRoomInfo() 종료");
-
-		// 하위 컴포넌트에게 전달받은 myRoom 데이터로
-		// 서버에 공개통화방 생성 요청
-		/*  createGroupCall()?  createMyRoom()?  */
+	//공개통화방 생성 로직 (방정보 입력 시 호출됨)
+	const createOGCRoom = (roomInfo) => {
+		socket.emit("ogc_room_create", JSON.stringify(roomInfo), (roomId) => {
+			console.log("방 생성 후 입장 완료", roomId);
+		});
+		console.log("emit ogc_room_create");
 	};
 
 	return (
@@ -179,7 +164,9 @@ export default function PublicGroupCall() {
 				<Fab
 					// colorScheme="violet" 이후에 색상 변경할게요
 					colorScheme="indigo"
-					onPress={createGroupCall}
+					onPress={() => {
+						setShowModal((prev) => !prev);
+					}}
 					position="absolute"
 					size="sm"
 					icon={
@@ -196,7 +183,7 @@ export default function PublicGroupCall() {
 				btn="생성"
 				showModal={showModal}
 				setShowModal={setShowModal}
-				sendRoomInfo={getRoomInfo}
+				sendRoomInfo={createOGCRoom}
 			/>
 		</NativeBaseProvider>
 	);
