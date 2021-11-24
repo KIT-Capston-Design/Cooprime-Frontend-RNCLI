@@ -145,15 +145,14 @@ export const GroupCallList = () => {
 };
 
 export default function PublicGroupCall() {
-	// 신고 팝업창 활성화 변수
+	// 모달창 활성화 변수
 	const [showModal, setShowModal] = useState(false);
 
-	const createGroupCall = () => {
+	const createOGCRoom = () => {
+		// 새로운 방 생성
+
+		// 모달 창 활성화
 		setShowModal((prev) => !prev);
-		// Alert.alert("새로운 통화방 생성", "로직은 createGroupCall에 작성");
-		// 통화방 이름 생성(= 사용자 이름, 사용자는 한 통화방만 생성할 수 있으니까)
-		// 서버에 통화방 생성 요청
-		// GroupCall 로직을 좀 읽어볼게요.. ㅠ
 	};
 
 	return (
