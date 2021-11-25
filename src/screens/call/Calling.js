@@ -20,7 +20,9 @@ export default function Calling({ navigation }) {
 		b: { tagName: "게임" },
 		3: { tagName: "축구" },
 	});
+	// 태그 수정 화면 ON/OFF 변수 및 함수
 	const { isOpen, onOpen, onClose } = useDisclose();
+
 	const startOneToOneCall = () => {
 		// 일대일 통화 시작
 		navigation.navigate("OneToOne"); // 일대일 통화 페이지로 이동
@@ -62,18 +64,6 @@ export default function Calling({ navigation }) {
 		}
 	};
 
-	const addMatchTags = async (text) => {
-		if (text === "") {
-			return;
-		}
-		const newMatchTags = {
-			...matchTags,
-		};
-
-		setMatchTags(newMatchTags);
-		await saveMatchTags(newMatchTags);
-	};
-
 	return (
 		<NativeBaseProvider>
 			<View style={styles.container}>
@@ -113,7 +103,12 @@ export default function Calling({ navigation }) {
 				>
 					태그 변경
 				</Button>
-				<TagSetting isOpen={isOpen} onClose={onClose} />
+				<TagSetting
+					isOpen={isOpen}
+					onClose={onClose}
+					matchTags={matchTags}
+					setMatchTags={setMatchTags}
+				/>
 			</Box>
 		</NativeBaseProvider>
 	);
