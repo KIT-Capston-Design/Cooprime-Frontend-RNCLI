@@ -49,7 +49,7 @@ export const OpenGroupCallList = (prop) => {
 
 			// 소켓 이벤트 등록
 			socket.on("ogc_roomlist", (roomInfList) => {
-				roomInfList = JSON.parse(roomInfList);
+				roomInfList = roomInfList;
 				setData(roomInfList);
 			});
 
@@ -93,15 +93,12 @@ export const OpenGroupCallList = (prop) => {
 		socket.emit("ogc_enter_room", item.roomId, isSucc);
 	};
 
-	const isSucc = (roomId) => {
+	const isSucc = (roomId, cnt) => {
 		if (roomId) {
-			Alert.alert("채팅방 입장 성공");
-
 			console.log("roomId", roomId);
 			// 차후 대기화면으로 이동하여 webRTC 연결 설정하는 코드 필요
-			prop.enterOGCRoom(roomId);
+			prop.enterOGCRoom(roomId, cnt);
 		} else {
-			Alert.alert("채팅방 입장 실패");
 		}
 	};
 
@@ -170,12 +167,17 @@ export default function OpenGroupCall({ navigation }) {
 		console.log("emit ogc_room_create");
 		socket.emit("ogc_room_create", JSON.stringify(roomInfo), (roomId) => {
 			console.log("방 생성 후 입장 완료", roomId);
-			enterOGCRoom(roomId);
+			enterOGCRoom(roomId, 0);
 		});
 	};
-	const enterOGCRoom = (roomId) => {
+	const enterOGCRoom = (roomId, numOfUser) => {
 		socket.emit("ogc_unobserve_roomlist");
-		navigation.navigate("OpenGroupCall", { socket: socket, roomId: roomId });
+
+		navigation.navigate("OpenGroupCall", {
+			socket: socket,
+			roomId: roomId,
+			numOfUser: numOfUser,
+		});
 	};
 
 	return (

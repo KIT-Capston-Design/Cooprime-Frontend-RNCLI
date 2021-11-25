@@ -89,8 +89,14 @@ export default function OpenGroupCall({ navigation, route }) {
 		setNumOfUser(route.params.numOfUser + 1);
 		// 화면에 사용자 입장/퇴장 메시지 출력
 		popUpMessage("HELLOHELLO");
+		socket.onAny(popUpMessage);
 
-		socket.on("ogc_welcome", (userId) => {});
+		socket.on("ogc_user_joins", (userSocketId, numOfUser) => {
+			setNumOfUser(numOfUser + 1);
+		});
+		socket.on("ogc_user_leaves", (userSocketId, numOfUser) => {
+			setNumOfUser(numOfUser - 1);
+		});
 
 		return () => {};
 	}, []);
@@ -103,10 +109,17 @@ export default function OpenGroupCall({ navigation, route }) {
 		console.log("exit");
 		console.log("emit ogc_observe_roomlist");
 		socket.emit("ogc_observe_roomlist");
+
+		// 이벤트 제거
+		socket.removeAllListeners("ogc_user_joins");
+		socket.removeAllListeners("ogc_user_leaves");
+		socket.offAny();
+
 		navigation.pop();
 	};
 
 	const popUpMessage = (message) => {
+		console.log("popUpMessage()", message);
 		/*화면에 메시지 출력*/
 		showMessage({
 			message: message,
