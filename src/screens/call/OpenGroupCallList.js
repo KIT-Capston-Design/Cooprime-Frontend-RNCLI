@@ -98,6 +98,7 @@ export const GroupCallList = () => {
 		if (val) {
 			Alert.alert("채팅방 입장 성공");
 			// 차후 대기화면으로 이동하여 webRTC 연결 설정하는 코드 필요
+			navigation.navigate("OpenGroupCall");
 		} else {
 			Alert.alert("채팅방 입장 실패");
 		}
