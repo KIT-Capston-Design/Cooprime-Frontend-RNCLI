@@ -16,7 +16,6 @@ import InputModal from "../../components/InputModal";
 import { io } from "socket.io-client";
 import { Value } from "react-native-reanimated";
 import { ControlledPropUpdatedSelectedItem } from "native-base/lib/typescript/components/composites/Typeahead/useTypeahead/types";
-
 ////
 
 const SERVER_DOMAIN = "http://192.168.0.9";
@@ -24,7 +23,7 @@ const SERVER_PORT = "3000";
 
 let socket;
 
-export const GroupCallList = () => {
+export const OpenGroupCallList = (prop) => {
 	const [data, setData] = useState([]);
 	const [offset, setOffSet] = useState(0);
 	const [loading, setLoading] = useState(false);
@@ -94,11 +93,13 @@ export const GroupCallList = () => {
 		socket.emit("ogc_enter_room", item.roomId, isSucc);
 	};
 
-	const isSucc = (val) => {
-		if (val) {
+	const isSucc = (roomId) => {
+		if (roomId) {
 			Alert.alert("채팅방 입장 성공");
+
+			console.log("roomId", roomId);
 			// 차후 대기화면으로 이동하여 webRTC 연결 설정하는 코드 필요
-			navigation.navigate("OpenGroupCall");
+			prop.enterOGCRoom(roomId);
 		} else {
 			Alert.alert("채팅방 입장 실패");
 		}
@@ -160,21 +161,26 @@ export const GroupCallList = () => {
 	);
 };
 
-export default function PublicGroupCall() {
+export default function OpenGroupCall({ navigation }) {
 	//공개통화방 display 변수
 	const [showModal, setShowModal] = useState(false);
 
 	//공개통화방 생성 로직 (방정보 입력 시 호출됨)
 	const createOGCRoom = (roomInfo) => {
+		console.log("emit ogc_room_create");
 		socket.emit("ogc_room_create", JSON.stringify(roomInfo), (roomId) => {
 			console.log("방 생성 후 입장 완료", roomId);
+			enterOGCRoom(roomId);
 		});
-		console.log("emit ogc_room_create");
+	};
+	const enterOGCRoom = (roomId) => {
+		socket.emit("ogc_unobserve_roomlist");
+		navigation.navigate("OpenGroupCall", { socket: socket, roomId: roomId });
 	};
 
 	return (
 		<NativeBaseProvider>
-			<GroupCallList />
+			<OpenGroupCallList enterOGCRoom={enterOGCRoom} />
 			<Box position="relative" h={0} w="100%">
 				<Fab
 					// colorScheme="violet" 이후에 색상 변경할게요

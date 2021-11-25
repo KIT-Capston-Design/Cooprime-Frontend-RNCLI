@@ -34,16 +34,18 @@ const SERVER_DOMAIN = "aitta.iptime.org";
 const SERVER_PORT = "3000";
 
 let socket;
-let realRoomName;
+let roomId;
 let myRoleNum;
 
-export default function OpenGroupCall({ navigation }) {
+export default function OpenGroupCall({ navigation, route }) {
+	const [isLoading, setIsLoading] = useState(true);
 	const iconSize = 60;
 	const [onMic, setOnMic] = useState(false);
 	const [onVideo, setOnVideo] = useState(true);
 
 	// 현재 방 인원수를 나타내는 state // 통화방에 입장/퇴장할 때 변경하면 될 것 같음
 	const [numOfUser, setNumOfUser] = useState(1);
+
 	// "..." 단추 클릭시 메뉴 ON/OFF
 	const { isOpen, onToggle } = useDisclose();
 
@@ -77,23 +79,37 @@ export default function OpenGroupCall({ navigation }) {
 
 	const handleDisconnectBtn = () => {
 		// 피어간 연결 종료 후 이전 화면으로
-		console.log("handleDisconnectBtn");
-
-		// navigation.navigate("Calling");
-		// navigation.pop();
-		// navigation.goBack();
+		finalize();
 	};
 
 	useEffect(() => {
+		console.log("OpenGroupCall");
 		console.log("-----------------useEffect----------------");
+		roomId = route.params.roomId;
+		socket = route.params.socket;
 
 		// 화면에 사용자 입장/퇴장 메시지 출력
 		// 파라미터에 사용자 닉네임(혹은 이름) 넣으시면 됩니다.
 
-		showPopUpMessage("HELLOHELLO");
+		popUpMessage("HELLOHELLO");
+
+		return () => {};
 	}, []);
 
-	const showPopUpMessage = (message) => {
+	const finalize = () => {
+		//TODO : 퇴장 처리
+		console.log("emit ogc_exit_room");
+		socket.emit("ogc_exit_room", roomId);
+
+		console.log("exit");
+		console.log("emit ogc_observe_roomlist");
+		socket.emit("ogc_observe_roomlist");
+		if (navigation.canGoBack()) {
+			navigation.pop();
+		}
+	};
+
+	const popUpMessage = (message) => {
 		//화면에 메시지 출력
 		showMessage({
 			message: message,

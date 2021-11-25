@@ -57,7 +57,7 @@ export default App = () => {
 	return (
 		<NavigationContainer>
 			<Stack.Navigator
-				initialRouteName="OpenGroupCall"
+				initialRouteName="OpenGroupCallList"
 				// Hiding header
 				screenOptions={{ headerShown: false }}
 			>
