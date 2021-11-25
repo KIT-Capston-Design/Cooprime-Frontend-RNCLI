@@ -9,6 +9,7 @@ import AuthPhoneNumberScreen from "./screens/login/AuthPhoneNumber";
 import SplashScreen from "./screens/login/Splash";
 import Home from "./screens/Home";
 import PublicGroupCall from "./screens/call/PublicGroupCall";
+import OneToOneCall from "./screens/call/OneToOneCall";
 
 const Stack = createStackNavigator();
 
@@ -56,7 +57,7 @@ export default App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="SplashScreen"
+        initialRouteName="HomeScreen"
         // Hiding header
         screenOptions={{ headerShown: false }}
       >
@@ -68,6 +69,8 @@ export default App = () => {
         <Stack.Screen name="HomeScreen" component={Home} />
         {/* 공개 그룹 통화 테스트하려면  initialRouteName="PublicGroupCall"  로 변경*/}
         <Stack.Screen name="PublicGroupCall" component={PublicGroupCall} />
+        {/* 공개 그룹 통화 테스트하려면  initialRouteName="PublicGroupCall"  로 변경*/}
+        <Stack.Screen name="OneToOneCall" component={OneToOneCall} />
       </Stack.Navigator>
     </NavigationContainer>
   );
