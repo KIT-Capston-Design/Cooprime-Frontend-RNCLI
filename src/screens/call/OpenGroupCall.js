@@ -22,6 +22,7 @@ import {
 	IconButton,
 	Icon,
 	useDisclose,
+	Badge,
 } from "native-base";
 
 // 서버 : "http://kitcapstone.codns.com"
@@ -41,6 +42,8 @@ export default function OpenGroupCall({ navigation }) {
 	const [onMic, setOnMic] = useState(false);
 	const [onVideo, setOnVideo] = useState(true);
 
+	// 현재 방 인원수를 나타내는 state // 통화방에 입장/퇴장할 때 변경하면 될 것 같음
+	const [numOfUser, setNumOfUser] = useState(1);
 	// "..." 단추 클릭시 메뉴 ON/OFF
 	const { isOpen, onToggle } = useDisclose();
 
@@ -100,160 +103,161 @@ export default function OpenGroupCall({ navigation }) {
 	};
 
 	return (
-		<>
-			<NativeBaseProvider flex="1">
-				<Box flex="1">
-					<HStack flex="1">
-						<Box flex="1" rounded="lg" borderColor="gray.200" borderWidth="1">
-							<RTCView streamURL={null} style={styles.rtcVideo} />
-						</Box>
-						<Box flex="1" rounded="lg" borderColor="gray.200" borderWidth="1">
-							<RTCView streamURL={null} style={styles.rtcVideo} />
-						</Box>
-					</HStack>
-					<HStack flex="1">
-						<Box flex="1" rounded="lg" borderColor="gray.200" borderWidth="1">
-							<RTCView streamURL={null} style={styles.rtcVideo} />
-						</Box>
-						<Box flex="1" rounded="lg" borderColor="gray.200" borderWidth="1">
-							<RTCView streamURL={null} style={styles.rtcVideo} />
-						</Box>
-					</HStack>
-				</Box>
-				<Box position="absolute" bottom="5" right="5">
-					<Box alignItems="center">
-						<Stagger
-							visible={isOpen}
-							initial={{
-								opacity: 0,
-								scale: 0,
-								translateY: 34,
-							}}
-							animate={{
-								translateY: 0,
-								scale: 1,
-								opacity: 1,
-								transition: {
-									type: "spring",
-									mass: 0.8,
-									stagger: {
-										offset: 30,
-										reverse: true,
-									},
-								},
-							}}
-							exit={{
-								translateY: 34,
-								scale: 0.5,
-								opacity: 0,
-								transition: {
-									duration: 100,
-									stagger: {
-										offset: 30,
-										reverse: true,
-									},
-								},
-							}}
-						>
-							<IconButton
-								mb="4"
-								variant="solid"
-								bg="red.500"
-								colorScheme="red"
-								borderRadius="full"
-								onPress={handleDisconnectBtn}
-								icon={
-									<Icon
-										as={MaterialCommunityIcons}
-										size="6"
-										name="phone-off"
-										_dark={{
-											color: "warmGray.50",
-										}}
-										color="warmGray.50"
-									/>
-								}
-							/>
-							<IconButton
-								mb="4"
-								variant="solid"
-								bg="yellow.400"
-								colorScheme="yellow"
-								borderRadius="full"
-								onPress={toggleMic}
-								icon={
-									<Icon
-										as={MaterialCommunityIcons}
-										_dark={{
-											color: "warmGray.50",
-										}}
-										size="6"
-										name="microphone"
-										color="warmGray.50"
-									/>
-								}
-							/>
-							<IconButton
-								mb="4"
-								variant="solid"
-								bg="teal.400"
-								colorScheme="teal"
-								borderRadius="full"
-								onPress={toggleVideo}
-								icon={
-									<Icon
-										as={MaterialCommunityIcons}
-										_dark={{
-											color: "warmGray.50",
-										}}
-										size="6"
-										name="video"
-										color="warmGray.50"
-									/>
-								}
-							/>
-							<IconButton
-								mb="4"
-								variant="solid"
-								bg="red.500"
-								colorScheme="red"
-								borderRadius="full"
-								icon={
-									<Icon
-										as={MaterialIcons}
-										size="6"
-										name="report"
-										_dark={{
-											color: "warmGray.50",
-										}}
-										color="warmGray.50"
-									/>
-								}
-							/>
-						</Stagger>
+		<NativeBaseProvider flex="1">
+			<Badge position="absolute" variant="subtle" alignSelf="center" zIndex="1">
+				<Text>{numOfUser} / 4</Text>
+			</Badge>
+			<Box flex="1">
+				<HStack flex="1">
+					<Box flex="1" rounded="lg" borderColor="gray.200" borderWidth="1">
+						<RTCView streamURL={null} style={styles.rtcVideo} />
 					</Box>
-					<IconButton
-						variant="solid"
-						borderRadius="full"
-						size="lg"
-						onPress={onToggle}
-						bg="cyan.400"
-						icon={
-							<Icon
-								as={MaterialCommunityIcons}
-								size="6"
-								name="dots-horizontal"
-								color="warmGray.50"
-								_dark={{
-									color: "warmGray.50",
-								}}
-							/>
-						}
-					/>
+					<Box flex="1" rounded="lg" borderColor="gray.200" borderWidth="1">
+						<RTCView streamURL={null} style={styles.rtcVideo} />
+					</Box>
+				</HStack>
+				<HStack flex="1">
+					<Box flex="1" rounded="lg" borderColor="gray.200" borderWidth="1">
+						<RTCView streamURL={null} style={styles.rtcVideo} />
+					</Box>
+					<Box flex="1" rounded="lg" borderColor="gray.200" borderWidth="1">
+						<RTCView streamURL={null} style={styles.rtcVideo} />
+					</Box>
+				</HStack>
+			</Box>
+			<Box position="absolute" bottom="5" right="5">
+				<Box alignItems="center">
+					<Stagger
+						visible={isOpen}
+						initial={{
+							opacity: 0,
+							scale: 0,
+							translateY: 34,
+						}}
+						animate={{
+							translateY: 0,
+							scale: 1,
+							opacity: 1,
+							transition: {
+								type: "spring",
+								mass: 0.8,
+								stagger: {
+									offset: 30,
+									reverse: true,
+								},
+							},
+						}}
+						exit={{
+							translateY: 34,
+							scale: 0.5,
+							opacity: 0,
+							transition: {
+								duration: 100,
+								stagger: {
+									offset: 30,
+									reverse: true,
+								},
+							},
+						}}
+					>
+						<IconButton
+							mb="4"
+							variant="solid"
+							bg="red.500"
+							colorScheme="red"
+							borderRadius="full"
+							onPress={handleDisconnectBtn}
+							icon={
+								<Icon
+									as={MaterialCommunityIcons}
+									size="6"
+									name="phone-off"
+									_dark={{
+										color: "warmGray.50",
+									}}
+									color="warmGray.50"
+								/>
+							}
+						/>
+						<IconButton
+							mb="4"
+							variant="solid"
+							bg="yellow.400"
+							colorScheme="yellow"
+							borderRadius="full"
+							onPress={toggleMic}
+							icon={
+								<Icon
+									as={MaterialCommunityIcons}
+									_dark={{
+										color: "warmGray.50",
+									}}
+									size="6"
+									name="microphone"
+									color="warmGray.50"
+								/>
+							}
+						/>
+						<IconButton
+							mb="4"
+							variant="solid"
+							bg="teal.400"
+							colorScheme="teal"
+							borderRadius="full"
+							onPress={toggleVideo}
+							icon={
+								<Icon
+									as={MaterialCommunityIcons}
+									_dark={{
+										color: "warmGray.50",
+									}}
+									size="6"
+									name="video"
+									color="warmGray.50"
+								/>
+							}
+						/>
+						<IconButton
+							mb="4"
+							variant="solid"
+							bg="red.500"
+							colorScheme="red"
+							borderRadius="full"
+							icon={
+								<Icon
+									as={MaterialIcons}
+									size="6"
+									name="report"
+									_dark={{
+										color: "warmGray.50",
+									}}
+									color="warmGray.50"
+								/>
+							}
+						/>
+					</Stagger>
 				</Box>
-				<FlashMessage />
-			</NativeBaseProvider>
-		</>
+				<IconButton
+					variant="solid"
+					borderRadius="full"
+					size="lg"
+					onPress={onToggle}
+					bg="cyan.400"
+					icon={
+						<Icon
+							as={MaterialCommunityIcons}
+							size="6"
+							name="dots-horizontal"
+							color="warmGray.50"
+							_dark={{
+								color: "warmGray.50",
+							}}
+						/>
+					}
+				/>
+			</Box>
+			<FlashMessage />
+		</NativeBaseProvider>
 	);
 }
 
