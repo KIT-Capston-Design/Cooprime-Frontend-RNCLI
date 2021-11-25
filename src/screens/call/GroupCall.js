@@ -412,18 +412,38 @@ export default function GroupCall({ navigation }) {
     <View style={styles.container}>
       <View style={styles.videoContainer}>
         <View style={styles.video}>
-          <RTCView streamURL={rStreamA.toURL()} style={styles.rtcVideo} />
+          <RTCView
+            streamURL={rStreamA.toURL()}
+            style={styles.rtcVideo}
+            mirror={true}
+            objectFit={"cover"}
+          />
         </View>
         <View style={styles.video}>
-          <RTCView streamURL={rStreamB.toURL()} style={styles.rtcVideo} />
+          <RTCView
+            streamURL={rStreamB.toURL()}
+            style={styles.rtcVideo}
+            mirror={true}
+            objectFit={"cover"}
+          />
         </View>
       </View>
       <View style={styles.videoContainer}>
         <View style={styles.video}>
-          <RTCView streamURL={rStreamC.toURL()} style={styles.rtcVideo} />
+          <RTCView
+            streamURL={rStreamC.toURL()}
+            style={styles.rtcVideo}
+            mirror={true}
+            objectFit={"cover"}
+          />
         </View>
         <View style={styles.video}>
-          <RTCView streamURL={lStream.toURL()} style={styles.rtcVideo} />
+          <RTCView
+            streamURL={lStream.toURL()}
+            style={styles.rtcVideo}
+            mirror={true}
+            objectFit={"cover"}
+          />
         </View>
       </View>
       <View style={styles.callSetting}>
