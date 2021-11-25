@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import FlashMessage, { showMessage } from "react-native-flash-message";
 import { io } from "socket.io-client";
 import {
 	RTCPeerConnection,
@@ -101,33 +102,33 @@ export default function GroupCall({ navigation }) {
 		navigation.navigate("Calling");
 	};
 
-	//   useEffect(async () => {
-	//     console.log("-----------------useEffect----------------");
+	useEffect(async () => {
+		console.log("-----------------useEffect----------------");
 
-	//     await initSocket();
-	//     await initCall();
+		await initSocket();
+		await initCall();
 
-	//     console.log("End initCall method");
-	//     console.log("matching start");
+		console.log("End initCall method");
+		console.log("matching start");
 
-	//     // RTC Code
-	//     myPeerConnections.forEach((myPeerConnection) => {
-	//       myPeerConnection.onicecandidate = (data) => {
-	//         console.log("sent candidate");
-	//         socket.emit(
-	//           "ice",
-	//           data.candidate,
-	//           realRoomName,
-	//           myPeerConnection.rPeerRoleNum
-	//         );
-	//       };
+		// RTC Code
+		myPeerConnections.forEach((myPeerConnection) => {
+			myPeerConnection.onicecandidate = (data) => {
+				console.log("sent candidate");
+				socket.emit("ice", data.candidate, realRoomName, myPeerConnection.rPeerRoleNum);
+			};
 
-	//       myPeerConnection.onaddstream = async (data) => {
-	//         console.log("On Add Stream");
-	//         await myPeerConnection.setRemoteStream(data.stream);
-	//       };
-	//     });
-	//   }, []);
+			myPeerConnection.onaddstream = async (data) => {
+				console.log("On Add Stream");
+				await myPeerConnection.setRemoteStream(data.stream);
+			};
+		});
+
+		// 화면에 사용자 입장/퇴장 메시지 출력
+		// 파라미터에 사용자 닉네임(혹은 이름) 넣으시면 됩니다.
+		alarmUserIn("익명1");
+		alarmUserOut("익명2");
+	}, []);
 
 	const initCall = async () => {
 		console.log("initCall");
@@ -261,10 +262,7 @@ export default function GroupCall({ navigation }) {
 			console.log("received the offer");
 
 			if (myPeerConnections[myPCIdx] !== undefined) {
-				if (
-					myPeerConnections[myPCIdx].setRemoteDescription !==
-					undefined
-				) {
+				if (myPeerConnections[myPCIdx].setRemoteDescription !== undefined) {
 					if (new RTCSessionDescription(offer) !== undefined) {
 						await myPeerConnections[myPCIdx].setRemoteDescription(
 							new RTCSessionDescription(offer)
@@ -276,11 +274,7 @@ export default function GroupCall({ navigation }) {
 					console.log("setRemoteDescription() is undefined");
 				}
 			} else {
-				console.log(
-					"myPeerConnection is undefined (idx :",
-					myPCIdx,
-					")"
-				);
+				console.log("myPeerConnection is undefined (idx :", myPCIdx, ")");
 			}
 
 			const answer = await myPeerConnections[myPCIdx].createAnswer();
@@ -322,10 +316,7 @@ export default function GroupCall({ navigation }) {
 			///
 
 			if (myPeerConnections[myPCIdx] !== undefined) {
-				if (
-					myPeerConnections[myPCIdx].setRemoteDescription !==
-					undefined
-				) {
+				if (myPeerConnections[myPCIdx].setRemoteDescription !== undefined) {
 					if (new RTCSessionDescription(answer) !== undefined) {
 						await myPeerConnections[myPCIdx].setRemoteDescription(
 							new RTCSessionDescription(answer)
@@ -337,11 +328,7 @@ export default function GroupCall({ navigation }) {
 					console.log("setRemoteDescription() is undefined");
 				}
 			} else {
-				console.log(
-					"myPeerConnection is undefined (idx :",
-					myPCIdx,
-					")"
-				);
+				console.log("myPeerConnection is undefined (idx :", myPCIdx, ")");
 			}
 
 			///
@@ -426,56 +413,41 @@ export default function GroupCall({ navigation }) {
 		});
 	};
 
+	const alarmUserIn = (userName) => {
+		// 사용자의 입장을 알림
+		showMessage({
+			message: userName + " 님이 입장하셨습니다.",
+			backgroundColor: "#c4b5fd",
+			color: "#ffffff",
+		});
+	};
+	const alarmUserOut = (userName) => {
+		// 사용자의 퇴장을 알림
+		showMessage({
+			message: userName + " 님이 퇴장하셨습니다.",
+			backgroundColor: "#c4b5fd",
+			color: "#ffffff",
+		});
+	};
+
 	return (
 		<>
 			<NativeBaseProvider flex="1">
 				<Box flex="1">
 					<HStack flex="1">
-						<Box
-							flex="1"
-							rounded="lg"
-							borderColor="gray.200"
-							borderWidth="1"
-						>
-							<RTCView
-								streamURL={rStreamA.toURL()}
-								style={styles.rtcVideo}
-							/>
+						<Box flex="1" rounded="lg" borderColor="gray.200" borderWidth="1">
+							<RTCView streamURL={rStreamA.toURL()} style={styles.rtcVideo} />
 						</Box>
-						<Box
-							flex="1"
-							rounded="lg"
-							borderColor="gray.200"
-							borderWidth="1"
-						>
-							<RTCView
-								streamURL={rStreamB.toURL()}
-								style={styles.rtcVideo}
-							/>
+						<Box flex="1" rounded="lg" borderColor="gray.200" borderWidth="1">
+							<RTCView streamURL={rStreamB.toURL()} style={styles.rtcVideo} />
 						</Box>
 					</HStack>
 					<HStack flex="1">
-						<Box
-							flex="1"
-							rounded="lg"
-							borderColor="gray.200"
-							borderWidth="1"
-						>
-							<RTCView
-								streamURL={rStreamC.toURL()}
-								style={styles.rtcVideo}
-							/>
+						<Box flex="1" rounded="lg" borderColor="gray.200" borderWidth="1">
+							<RTCView streamURL={rStreamC.toURL()} style={styles.rtcVideo} />
 						</Box>
-						<Box
-							flex="1"
-							rounded="lg"
-							borderColor="gray.200"
-							borderWidth="1"
-						>
-							<RTCView
-								streamURL={lStream.toURL()}
-								style={styles.rtcVideo}
-							/>
+						<Box flex="1" rounded="lg" borderColor="gray.200" borderWidth="1">
+							<RTCView streamURL={lStream.toURL()} style={styles.rtcVideo} />
 						</Box>
 					</HStack>
 				</Box>
@@ -610,48 +582,8 @@ export default function GroupCall({ navigation }) {
 						}
 					/>
 				</Box>
+				<FlashMessage />
 			</NativeBaseProvider>
-			{/* <View style={styles.container}>
-        <View style={styles.videoContainer}>
-          <View style={styles.video}>
-            <RTCView streamURL={rStreamA.toURL()} style={styles.rtcVideo} />
-          </View>
-          <View style={styles.video}>
-            <RTCView streamURL={rStreamB.toURL()} style={styles.rtcVideo} />
-          </View>
-        </View>
-        <View style={styles.videoContainer}>
-          <View style={styles.video}>
-            <RTCView streamURL={rStreamC.toURL()} style={styles.rtcVideo} />
-          </View>
-          <View style={styles.video}>
-            <RTCView streamURL={lStream.toURL()} style={styles.rtcVideo} />
-          </View>
-        </View>
-        <View style={styles.callSetting}>
-          <TouchableOpacity onPress={toggleMic}>
-            <MaterialCommunityIcons
-              name={onMic ? "volume-mute" : "volume-source"}
-              size={iconSize}
-              color={onMic ? "grey" : "black"}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={toggleVideo}>
-            <MaterialIcons
-              name={onVideo ? "videocam" : "videocam-off"}
-              size={iconSize}
-              color={onVideo ? "#05ff05" : "red"}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handleDisconnectBtn}>
-            <MaterialCommunityIcons
-              name="phone-off"
-              size={iconSize}
-              color="red"
-            />
-          </TouchableOpacity>
-        </View>
-      </View> */}
 		</>
 	);
 }
@@ -662,19 +594,6 @@ const styles = StyleSheet.create({
 		flex: 1,
 		position: "relative",
 		flexDirection: "row",
-	},
-	videoLayout: {
-		flex: 1,
-		// borderWidth: 1,
-		// borderColor: "coolGray.300",
-		// shadowColor: "#000",
-		// shadowOffset: {
-		//   width: 0.3,
-		//   height: 0.3,
-		// },
-		// shadowOpacity: 0.25,
-		// shadowRadius: 3.85,
-		// elevation: 5,
 	},
 	video: {
 		width: "100%",
