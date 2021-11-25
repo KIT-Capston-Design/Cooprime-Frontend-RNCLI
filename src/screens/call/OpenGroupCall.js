@@ -83,34 +83,31 @@ export default function OpenGroupCall({ navigation, route }) {
 	};
 
 	useEffect(() => {
-		console.log("OpenGroupCall");
-		console.log("-----------------useEffect----------------");
+		console.log("-------OpenGroupCall useEffect-------");
 		roomId = route.params.roomId;
 		socket = route.params.socket;
-
+		setNumOfUser(route.params.numOfUser + 1);
 		// 화면에 사용자 입장/퇴장 메시지 출력
-		// 파라미터에 사용자 닉네임(혹은 이름) 넣으시면 됩니다.
-
 		popUpMessage("HELLOHELLO");
+
+		socket.on("ogc_welcome", (userId) => {});
 
 		return () => {};
 	}, []);
 
 	const finalize = () => {
-		//TODO : 퇴장 처리
+		//퇴장 처리
 		console.log("emit ogc_exit_room");
 		socket.emit("ogc_exit_room", roomId);
 
 		console.log("exit");
 		console.log("emit ogc_observe_roomlist");
 		socket.emit("ogc_observe_roomlist");
-		if (navigation.canGoBack()) {
-			navigation.pop();
-		}
+		navigation.pop();
 	};
 
 	const popUpMessage = (message) => {
-		//화면에 메시지 출력
+		/*화면에 메시지 출력*/
 		showMessage({
 			message: message,
 			backgroundColor: "#c4b5fd",
