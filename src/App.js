@@ -10,6 +10,7 @@ import SplashScreen from "./screens/login/Splash";
 import Home from "./screens/Home";
 import OpenGroupCallList from "./screens/call/OpenGroupCallList";
 import OpenGroupCall from "./screens/call/OpenGroupCall";
+import Calling from "./screens/call/Calling";
 
 const Stack = createStackNavigator();
 
@@ -57,7 +58,7 @@ export default App = () => {
 	return (
 		<NavigationContainer>
 			<Stack.Navigator
-				initialRouteName="OpenGroupCall"
+				initialRouteName="HomeScreen"
 				// Hiding header
 				screenOptions={{ headerShown: false }}
 			>
@@ -70,6 +71,7 @@ export default App = () => {
 				{/* 공개 그룹 통화 테스트하려면  initialRouteName="PublicGroupCall"  로 변경*/}
 				<Stack.Screen name="OpenGroupCallList" component={OpenGroupCallList} />
 				<Stack.Screen name="OpenGroupCall" component={OpenGroupCall} />
+				<Stack.Screen name="Calling" component={Calling} />
 			</Stack.Navigator>
 		</NavigationContainer>
 	);
