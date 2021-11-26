@@ -12,6 +12,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import LinearGradient from "react-native-linear-gradient";
 import InputModal from "../../components/InputModal";
 
+import { mediaDevices } from "react-native-webrtc";
 ////
 import { io } from "socket.io-client";
 import { Value } from "react-native-reanimated";
@@ -170,6 +171,7 @@ export default function OpenGroupCall({ navigation }) {
 			enterOGCRoom(roomId, 0);
 		});
 	};
+
 	const enterOGCRoom = (roomId, numOfUser) => {
 		socket.emit("ogc_unobserve_roomlist");
 

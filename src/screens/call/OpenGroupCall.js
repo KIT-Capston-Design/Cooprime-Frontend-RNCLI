@@ -24,6 +24,7 @@ import {
 	useDisclose,
 	Badge,
 } from "native-base";
+import { taggedTemplateExpression } from "@babel/types";
 
 // 서버 : "http://kitcapstone.codns.com"
 // PC  : "http://localhost"
@@ -35,11 +36,16 @@ const SERVER_PORT = "3000";
 
 let socket;
 let roomId;
-let myRoleNum;
+let llocalStream;
 
 export default function OpenGroupCall({ navigation, route }) {
-	const [isLoading, setIsLoading] = useState(true);
-	const iconSize = 60;
+	const [localStream, setLocalStream] = useState({ toURL: () => null });
+	const [rStreamA, setrStreamA] = useState({ toURL: () => null });
+	const [rStreamB, setrStreamB] = useState({ toURL: () => null });
+	const [rStreamC, setrStreamC] = useState({ toURL: () => null });
+
+	const myPeerConnections = [];
+
 	const [onMic, setOnMic] = useState(false);
 	const [onVideo, setOnVideo] = useState(true);
 
@@ -48,26 +54,6 @@ export default function OpenGroupCall({ navigation, route }) {
 
 	// "..." 단추 클릭시 메뉴 ON/OFF
 	const { isOpen, onToggle } = useDisclose();
-
-	const myPeerConnections = [];
-
-	for (let i = 0; i < 3; i++) {
-		myPeerConnections.push(
-			new RTCPeerConnection({
-				iceServers: [
-					{
-						urls: "stun:stun.l.google.com:19302",
-					},
-					{
-						urls: "stun:stun1.l.google.com:19302",
-					},
-					{
-						urls: "stun:stun2.l.google.com:19302",
-					},
-				],
-			})
-		);
-	}
 
 	const toggleMic = () => {
 		setOnMic(!onMic);
@@ -81,21 +67,166 @@ export default function OpenGroupCall({ navigation, route }) {
 		// 피어간 연결 종료 후 이전 화면으로
 		finalize();
 	};
+	const getMedia = async () => {
+		console.log("getMedia() Start");
+
+		const stream = await mediaDevices.getUserMedia({
+			audio: true,
+			video: {
+				mandatory: {
+					minWidth: 500, // Provide your own width, height and frame rate here
+					minHeight: 300,
+					minFrameRate: 30,
+				},
+				facingMode: "user",
+				// optional: videoSourceId ? expo start --localhost --android[{ sourceId: videoSourceId }] : [],
+			},
+		});
+		setLocalStream(stream);
+		llocalStream = stream;
+		console.log("setted LocalStream", stream);
+		// await mediaDevices
+		// 	.getUserMedia({
+		// 		audio: true,
+		// 		video: {
+		// 			mandatory: {
+		// 				minWidth: 500, // Provide your own width, height and frame rate here
+		// 				minHeight: 300,
+		// 				minFrameRate: 30,
+		// 			},
+		// 			facingMode: "user",
+		// 			// optional: videoSourceId ? expo start --localhost --android[{ sourceId: videoSourceId }] : [],
+		// 		},
+		// 	})
+		// 	.then((stream) => {
+		// 		// 스트림 얻기 성공
+		// 		setLocalStream(stream);
+		// 		console.log("get myStream");
+		// 	})
+		// 	.catch((error) => {
+		// 		// 스트림 얻기 실패
+		// 		console.log(error);
+		// 	});
+
+		console.log("getMedia() End");
+	};
 
 	useEffect(() => {
 		console.log("-------OpenGroupCall useEffect-------");
+
+		getMedia();
+
 		roomId = route.params.roomId;
 		socket = route.params.socket;
 		setNumOfUser(route.params.numOfUser + 1);
 		// 화면에 사용자 입장/퇴장 메시지 출력
 		popUpMessage("HELLOHELLO");
+
 		socket.onAny(popUpMessage);
 
-		socket.on("ogc_user_joins", (userSocketId, numOfUser) => {
+		const createNewPeerConnection = async (userSocketId) => {
+			const curMyPC = new RTCPeerConnection({
+				iceServers: [
+					{
+						urls: "stun:stun.l.google.com:19302",
+					},
+					{
+						urls: "stun:stun1.l.google.com:19302",
+					},
+					{
+						urls: "stun:stun2.l.google.com:19302",
+					},
+				],
+			});
+
+			myPeerConnections.push(curMyPC);
+
+			curMyPC.userSocketId = userSocketId;
+
+			if (rStreamA.toURL() === null) {
+				curMyPC.setRemoteStream = setrStreamA;
+			} else if (rStreamB.toURL() === null) {
+				curMyPC.setRemoteStream = setrStreamB;
+			} else {
+				curMyPC.setRemoteStream = setrStreamC;
+			}
+
+			console.log("localStream added", llocalStream.toURL());
+			curMyPC.addStream(llocalStream);
+
+			curMyPC.onicecandidate = (data) => {
+				console.log("fire candidate");
+				socket.emit("ogc_ice", data.candidate, curMyPC.userSocketId);
+			};
+
+			curMyPC.onaddstream = async (data) => {
+				console.log("On Add Stream");
+				await curMyPC.setRemoteStream(data.stream);
+			};
+
+			return curMyPC;
+		};
+		socket.on("ogc_user_joins", async (userSocketId, numOfUser) => {
 			setNumOfUser(numOfUser + 1);
+
+			// 들어오는 유저에 대한 RTCPeerConnection push & setting
+
+			const curMyPC = await createNewPeerConnection(userSocketId);
+
+			// offer
+			console.log("create offer");
+			const offer = await curMyPC.createOffer();
+
+			await curMyPC.setLocalDescription(offer);
+
+			console.log("sent the ogc_offer");
+
+			socket.emit("ogc_offer", offer, userSocketId);
 		});
+
+		socket.on("ogc_offer", async (offer, userSocketId) => {
+			// 받은 offer를 통해 Connection, RTCPeerConnection 생성
+
+			const curMyPC = await createNewPeerConnection(userSocketId);
+
+			await curMyPC.setRemoteDescription(new RTCSessionDescription(offer));
+			console.log("create answer");
+			const answer = await curMyPC.createAnswer();
+			curMyPC.setLocalDescription(answer);
+			socket.emit("ogc_answer", answer, userSocketId);
+			console.log("sent the ogc_answer");
+		});
+
+		socket.on("ogc_answer", async (answer, userSocketId) => {
+			myPeerConnections.forEach(async (conn) => {
+				if (conn.userSocketId === userSocketId) {
+					await conn.setRemoteDescription(new RTCSessionDescription(answer));
+					console.log("set the answer");
+					return false;
+				}
+			});
+		});
+
+		socket.on("ogc_ice", (ice, userSocketId) => {
+			myPeerConnections.forEach((conn) => {
+				if (conn.userSocketId === userSocketId) {
+					conn.addIceCandidate(ice);
+					console.log("added ice");
+					return false;
+				}
+			});
+		});
+
 		socket.on("ogc_user_leaves", (userSocketId, numOfUser) => {
 			setNumOfUser(numOfUser - 1);
+
+			myPeerConnections.forEach((conn, index) => {
+				if (conn.userSocketId === userSocketId) {
+					conn.setRemoteStream({ toURL: () => null });
+					conn.close();
+					myPeerConnections.splice(index, 1);
+				}
+			});
 		});
 
 		return () => {};
@@ -110,9 +241,20 @@ export default function OpenGroupCall({ navigation, route }) {
 		console.log("emit ogc_observe_roomlist");
 		socket.emit("ogc_observe_roomlist");
 
+		llocalStream.getTracks().forEach((track) => {
+			track.stop();
+		});
+
+		myPeerConnections.forEach((conn) => {
+			conn.close();
+		});
+
 		// 이벤트 제거
 		socket.removeAllListeners("ogc_user_joins");
 		socket.removeAllListeners("ogc_user_leaves");
+		socket.removeAllListeners("ogc_offer");
+		socket.removeAllListeners("ogc_answer");
+		socket.removeAllListeners("ogc_ice");
 		socket.offAny();
 
 		navigation.pop();
@@ -136,18 +278,18 @@ export default function OpenGroupCall({ navigation, route }) {
 			<Box flex="1">
 				<HStack flex="1">
 					<Box flex="1" rounded="lg" borderColor="gray.200" borderWidth="1">
-						<RTCView streamURL={null} style={styles.rtcVideo} />
+						<RTCView streamURL={rStreamA.toURL()} style={styles.rtcVideo} />
 					</Box>
 					<Box flex="1" rounded="lg" borderColor="gray.200" borderWidth="1">
-						<RTCView streamURL={null} style={styles.rtcVideo} />
+						<RTCView streamURL={rStreamB.toURL()} style={styles.rtcVideo} />
 					</Box>
 				</HStack>
 				<HStack flex="1">
 					<Box flex="1" rounded="lg" borderColor="gray.200" borderWidth="1">
-						<RTCView streamURL={null} style={styles.rtcVideo} />
+						<RTCView streamURL={rStreamC.toURL()} style={styles.rtcVideo} />
 					</Box>
 					<Box flex="1" rounded="lg" borderColor="gray.200" borderWidth="1">
-						<RTCView streamURL={null} style={styles.rtcVideo} />
+						<RTCView streamURL={localStream.toURL()} style={styles.rtcVideo} />
 					</Box>
 				</HStack>
 			</Box>
