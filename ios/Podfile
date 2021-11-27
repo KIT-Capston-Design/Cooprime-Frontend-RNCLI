@@ -16,6 +16,8 @@ target 'Cooprime' do
 
   pod 'BVLinearGradient', :path => '../node_modules/react-native-linear-gradient'
 
+  pod 'ReactNativeIncallManager', :path => '../node_modules/react-native-incall-manager'
+
   target 'CooprimeTests' do
     inherit! :complete
     # Pods for testing

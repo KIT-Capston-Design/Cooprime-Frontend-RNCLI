@@ -143,13 +143,10 @@ export default function GroupCall({ navigation }) {
     const myStream = await mediaDevices.getUserMedia({
       audio: true,
       video: {
-        mandatory: {
-          minWidth: 500, // Provide your own width, height and frame rate here
-          minHeight: 300,
-          minFrameRate: 30,
-        },
+        width: { min: 1024, ideal: 1280, max: 1920 },
+        height: { min: 776, ideal: 720, max: 1080 },
+        minFrameRate: 15,
         facingMode: "user",
-        // optional: videoSourceId ? expo start --localhost --android[{ sourceId: videoSourceId }] : [],
       },
     });
     console.log("get mystream");
@@ -415,18 +412,38 @@ export default function GroupCall({ navigation }) {
     <View style={styles.container}>
       <View style={styles.videoContainer}>
         <View style={styles.video}>
-          <RTCView streamURL={rStreamA.toURL()} style={styles.rtcVideo} />
+          <RTCView
+            streamURL={rStreamA.toURL()}
+            style={styles.rtcVideo}
+            mirror={true}
+            objectFit={"cover"}
+          />
         </View>
         <View style={styles.video}>
-          <RTCView streamURL={rStreamB.toURL()} style={styles.rtcVideo} />
+          <RTCView
+            streamURL={rStreamB.toURL()}
+            style={styles.rtcVideo}
+            mirror={true}
+            objectFit={"cover"}
+          />
         </View>
       </View>
       <View style={styles.videoContainer}>
         <View style={styles.video}>
-          <RTCView streamURL={rStreamC.toURL()} style={styles.rtcVideo} />
+          <RTCView
+            streamURL={rStreamC.toURL()}
+            style={styles.rtcVideo}
+            mirror={true}
+            objectFit={"cover"}
+          />
         </View>
         <View style={styles.video}>
-          <RTCView streamURL={lStream.toURL()} style={styles.rtcVideo} />
+          <RTCView
+            streamURL={lStream.toURL()}
+            style={styles.rtcVideo}
+            mirror={true}
+            objectFit={"cover"}
+          />
         </View>
       </View>
       <View style={styles.callSetting}>
