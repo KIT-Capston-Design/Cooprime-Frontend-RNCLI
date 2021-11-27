@@ -24,6 +24,10 @@ import {
 	Badge,
 } from "native-base";
 
+import { LogBox } from "react-native";
+LogBox.ignoreLogs(["new NativeEventEmitter"]);
+LogBox.ignoreLogs(["Non-serializable values"]);
+
 let socket;
 let roomId;
 let llocalStream;
