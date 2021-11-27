@@ -37,7 +37,7 @@ export default TagSetting = ({ isOpen, onClose, matchTags, setMatchTags }) => {
 	const deleteMatchTag = async (key) => {
 		const newMatchTags = { ...matchTags };
 		delete newMatchTags[key];
-		setToDos(newMatchTags);
+		setMatchTags(newMatchTags);
 
 		// AsyncStorage에 저장해야함
 		// saveToDos(newMatchTags);
@@ -60,6 +60,7 @@ export default TagSetting = ({ isOpen, onClose, matchTags, setMatchTags }) => {
 					>
 						{Object.keys(matchTags).map((key) => (
 							<Badge
+								key={key}
 								colorScheme="info"
 								flexDirection="row"
 								justifyContent="space-between"
@@ -133,10 +134,10 @@ export default TagSetting = ({ isOpen, onClose, matchTags, setMatchTags }) => {
 							icon={
 								<Icon as={Fontisto} name="plus-a" size="sm" color="warmGray.50" />
 							}
-							onPress={() => {
-								// addItem(inputValue);
-								// setInputValue("");
-							}}
+							// onPress={() => {
+							// 	// addItem(inputValue);
+							// 	// setInputValue("");
+							// }}
 						/>
 					</HStack>
 				</Box>
