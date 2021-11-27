@@ -28,7 +28,7 @@ export default function OneToOneCall({ navigation }) {
   const iconSize = 60;
   const [localStream, setLocalStream] = useState({ toURL: () => null });
   const [remoteStream, setRemoteStream] = useState({ toURL: () => null });
-  const onMic = useRef(false);
+  const [onMic, setOnMic] = useState(false);
   const onVideo = useRef(true);
   const [showModal, setShowModal] = useState(false); // 신고 팝업창 활성화 변수
   const [myPeerConnection, setMyPeerConnection] = useState(
@@ -49,10 +49,9 @@ export default function OneToOneCall({ navigation }) {
   );
 
   const toggleMic = () => {
-    onMic.current = !onMic.current;
+    setOnMic(!onMic);
     console.log("onMic", onMic);
-    myPeerConnection.getLocalStreams()[0].getAudioTracks()[0].enabled =
-      onMic.current;
+    myPeerConnection.getLocalStreams()[0].getAudioTracks()[0].enabled = onMic;
   };
 
   const toggleVideo = async () => {
@@ -60,6 +59,10 @@ export default function OneToOneCall({ navigation }) {
     onVideo.current
       ? setLocalStream(myStream)
       : setLocalStream({ toURL: () => null });
+    // myPeerConnection
+    //   .getLocalStreams()[0]
+    //   .getVideoTracks()[0]
+    //   .onended(setRemoteStream({ toURL: () => null }));
     myPeerConnection.getLocalStreams()[0].getVideoTracks()[0].enabled =
       onVideo.current;
   };
@@ -69,10 +72,8 @@ export default function OneToOneCall({ navigation }) {
 
     InCallManager.start({ media: "audio" });
     InCallManager.setForceSpeakerphoneOn(true);
-
     await getMedia();
     setLocalStream(myStream);
-    // setRemoteStream(myStream);
 
     await initSocket();
     await initCall();
@@ -88,6 +89,11 @@ export default function OneToOneCall({ navigation }) {
       await setRemoteStream(data.stream);
       setTimeout(() => setLocalStream(myStream), 1000);
     };
+
+    myPeerConnection
+      .getLocalStreams()[0]
+      .getVideoTracks()[0]
+      .onended(() => console.log("aaa"));
 
     return () => {
       InCallManager.stop();
@@ -223,9 +229,9 @@ export default function OneToOneCall({ navigation }) {
       <View style={styles.callSetting}>
         <TouchableOpacity onPress={toggleMic}>
           <MaterialCommunityIcons
-            name={onMic.current ? "volume-mute" : "volume-source"}
+            name={onMic ? "volume-mute" : "volume-source"}
             size={iconSize}
-            color={onMic.current ? "grey" : "red"}
+            color={onMic ? "grey" : "red"}
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={toggleVideo}>
