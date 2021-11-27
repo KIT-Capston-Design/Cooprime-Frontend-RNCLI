@@ -104,6 +104,9 @@ export default function OpenGroupCall({ navigation, route }) {
 	useEffect(() => {
 		console.log("-------OpenGroupCall useEffect-------");
 
+		InCallManager.start({ media: "audio" });
+		InCallManager.setForceSpeakerphoneOn(true);
+
 		getMedia();
 
 		roomId = route.params.roomId;
@@ -238,7 +241,9 @@ export default function OpenGroupCall({ navigation, route }) {
 			});
 		});
 
-		return () => {};
+		return () => {
+			InCallManager.stop();
+		};
 	}, []);
 
 	const finalize = () => {
