@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import ReportModal from "../../components/ReportModal";
+import Loading from "../../components/Loading";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Ionicons from "react-native-vector-icons/Ionicons";

@@ -54,6 +54,7 @@ const Auth = () => {
 };
 
 export default App = () => {
+<<<<<<< HEAD
 	return (
 		<NavigationContainer>
 			<Stack.Navigator
@@ -74,4 +75,24 @@ export default App = () => {
 			</Stack.Navigator>
 		</NavigationContainer>
 	);
+=======
+  return (
+    <NavigationContainer>
+      <Stack.Navigator
+        initialRouteName="HomeScreen"
+        // Hiding header
+        screenOptions={{ headerShown: false }}
+      >
+        {/* SplashScreen which will come once for 5 Seconds */}
+        <Stack.Screen name="SplashScreen" component={SplashScreen} />
+        {/* Auth Navigator: Include Login and Signup */}
+        <Stack.Screen name="Auth" component={Auth} />
+        {/* Navigation Drawer as a landing page */}
+        <Stack.Screen name="HomeScreen" component={Home} />
+        {/* 공개 그룹 통화 테스트하려면  initialRouteName="PublicGroupCall"  로 변경*/}
+        <Stack.Screen name="PublicGroupCall" component={PublicGroupCall} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+>>>>>>> b450b96e25ba69acc65af7d7c9beaf7ed20e238b
 };
