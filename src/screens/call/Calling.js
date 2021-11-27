@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, AsyncStorage } from "react-native";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
 	Badge,
 	HStack,
@@ -9,6 +10,7 @@ import {
 	NativeBaseProvider,
 	Box,
 	Center,
+	Text,
 } from "native-base";
 import TagSetting from "../../components/TagSetting";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -35,7 +37,8 @@ export default function Calling({ navigation }) {
 
 	useEffect(() => {
 		// console.log(matchTags);
-		setMatchTags({ ...matchTags, d: { tagName: "코딩" } });
+		// loadMatchTags();
+		// setMatchTags({ ...matchTags, d: { tagName: "코딩" } });
 		// Object.keys(matchTags).map((key) => {
 		// 	console.log(matchTags[key]);
 		// 	console.log(matchTags[key].tagName);
@@ -74,10 +77,10 @@ export default function Calling({ navigation }) {
 					<Text style={styles.innerText}>Group Call</Text>
 				</TouchableOpacity>
 				{/*
-      여기에 사용자의 저장된 태그 보여주는 화면
-      */}
+				여기에 사용자의 저장된 태그 보여주는 화면
+				*/}
 			</View>
-			<Box flex={0.2}>
+			<Box flex={0.3} h="auto" justifyContent="center" margin="5">
 				<HStack
 					space={{
 						base: 2,
@@ -87,9 +90,12 @@ export default function Calling({ navigation }) {
 						base: "auto",
 						md: 0,
 					}}
+					flexWrap="wrap"
 				>
 					{Object.keys(matchTags).map((key) => (
-						<Badge>{matchTags[key].tagName}</Badge>
+						<Badge>
+							<Text fontSize="md">{matchTags[key].tagName}</Text>
+						</Badge>
 					))}
 				</HStack>
 				<Button
@@ -108,6 +114,7 @@ export default function Calling({ navigation }) {
 					onClose={onClose}
 					matchTags={matchTags}
 					setMatchTags={setMatchTags}
+					saveMatchTags={saveMatchTags}
 				/>
 			</Box>
 		</NativeBaseProvider>

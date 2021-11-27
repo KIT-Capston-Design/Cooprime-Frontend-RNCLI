@@ -13,9 +13,12 @@ import {
 	IconButton,
 	Input,
 } from "native-base";
+import { Alert } from "react-native";
 import Fontisto from "react-native-vector-icons/Fontisto";
 
-export default TagSetting = ({ isOpen, onClose, matchTags, setMatchTags }) => {
+export default TagSetting = ({ isOpen, onClose, matchTags, setMatchTags, saveMatchTags }) => {
+	const [curTag, setCurTag] = useState("");
+
 	useEffect(() => {
 		// 인기 태그들 서버로부터 불러오기
 		// loadPopularTags;
@@ -25,28 +28,39 @@ export default TagSetting = ({ isOpen, onClose, matchTags, setMatchTags }) => {
 		if (tagName === "") {
 			return;
 		}
+		if (Object.keys(matchTags).length >= 5) {
+			Alert.alert("태그 개수는 5개까지 가능합니다.");
+			setCurTag("");
+			return;
+		}
+		if (tagName.length > 10) {
+			Alert.alert("태그는 10글자를 초과할 수 없습니다.");
+			setCurTag("");
+			return;
+		}
 
 		const newMatchTags = {
 			...matchTags,
-			// 뭘로 저장하지... [Date.now()]: { tagName }  ...?
+			// 뭘로 저장하지...
+			[Date.now()]: { tagName: tagName },
 		};
 
 		setMatchTags(newMatchTags);
-		// await saveMatchTags(newMatchTags);
+		await saveMatchTags(newMatchTags);
+		setCurTag("");
 	};
+
 	const deleteMatchTag = async (key) => {
 		const newMatchTags = { ...matchTags };
 		delete newMatchTags[key];
-		setToDos(newMatchTags);
-
-		// AsyncStorage에 저장해야함
-		// saveToDos(newMatchTags);
+		setMatchTags(newMatchTags);
+		await saveMatchTags(newMatchTags);
 	};
 
 	return (
 		<Actionsheet isOpen={isOpen} onClose={onClose}>
 			<Actionsheet.Content>
-				<Box w="100%" h={60} px={4} justifyContent="center">
+				<Box w="100%" px={4} justifyContent="center">
 					<HStack
 						space={{
 							base: 2,
@@ -64,11 +78,11 @@ export default TagSetting = ({ isOpen, onClose, matchTags, setMatchTags }) => {
 								flexDirection="row"
 								justifyContent="space-between"
 							>
-								<Text bold marginRight="1">
+								<Text bold marginRight="1" fontSize="md">
 									{matchTags[key].tagName}
 								</Text>
 								<IconButton
-									onPress={deleteMatchTag(key)}
+									onPress={() => deleteMatchTag(key)}
 									padding="0.5"
 									icon={<Icon as={Fontisto} name="close" />}
 									borderRadius="full"
@@ -86,8 +100,15 @@ export default TagSetting = ({ isOpen, onClose, matchTags, setMatchTags }) => {
 						))}
 					</HStack>
 				</Box>
-				<Box w="100%" h={150} borderTopWidth="1" borderColor="gray.300" padding="3">
-					<Text fontSize="16" color="gray.500" bold>
+				<Box
+					w="100%"
+					h={150}
+					borderTopWidth="1"
+					borderColor="gray.300"
+					padding="3"
+					marginTop="4"
+				>
+					<Text fontSize="lg" color="gray.500" bold>
 						인기 태그
 					</Text>
 					<HStack
@@ -117,14 +138,14 @@ export default TagSetting = ({ isOpen, onClose, matchTags, setMatchTags }) => {
 					</HStack>
 				</Box>
 				<Box w="100%" h={150} borderTopWidth="1" borderColor="gray.300" padding="3">
-					<Text fontSize="16" color="gray.500" bold>
+					<Text fontSize="lg" color="gray.500" bold paddingBottom="3">
 						직접 입력
 					</Text>
 					<HStack space={2}>
 						<Input
 							flex={1}
-							// onChangeText={(v) => setInputValue(v)}
-							// value={inputValue}
+							onChangeText={(v) => setCurTag(v)}
+							value={curTag}
 							placeholder="태그 이름"
 						/>
 						<IconButton
@@ -134,8 +155,7 @@ export default TagSetting = ({ isOpen, onClose, matchTags, setMatchTags }) => {
 								<Icon as={Fontisto} name="plus-a" size="sm" color="warmGray.50" />
 							}
 							onPress={() => {
-								// addItem(inputValue);
-								// setInputValue("");
+								addMatchTag(curTag);
 							}}
 						/>
 					</HStack>
