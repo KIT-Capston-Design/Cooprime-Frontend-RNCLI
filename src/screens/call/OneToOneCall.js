@@ -37,8 +37,8 @@ export default function OneToOneCall({ navigation }) {
 
 	// "..." 단추 클릭시 메뉴 ON/OFF
 	const { isOpen, onToggle } = useDisclose();
-
 	const [showModal, setShowModal] = useState(false); // 신고 팝업창 활성화 변수
+
 	const [myPeerConnection, setMyPeerConnection] = useState(
 		// 우리 서버 : stun:20.78.169.27:3478
 		new RTCPeerConnection({
@@ -359,7 +359,6 @@ export default function OneToOneCall({ navigation }) {
 				/>
 			</Box>
 			<ReportModal showModal={showModal} setShowModal={setShowModal} />
-			{/* </View> */}
 		</NativeBaseProvider>
 	);
 }
