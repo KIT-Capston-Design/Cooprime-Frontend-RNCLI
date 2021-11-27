@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -24,6 +24,8 @@ import {
 	Badge,
 } from "native-base";
 
+import InCallManager from "react-native-incall-manager";
+
 import { LogBox } from "react-native";
 LogBox.ignoreLogs(["new NativeEventEmitter"]);
 LogBox.ignoreLogs(["Non-serializable values"]);
@@ -33,6 +35,7 @@ let roomId;
 let llocalStream;
 
 let rStreamsStatus = { rStreamA: false, rStreamB: false, rStreamC: false };
+let trueOnMic = true; // State의 상식 밖 동작으로 인한 전역변수
 
 export default function OpenGroupCall({ navigation, route }) {
 	const [localStream, setLocalStream] = useState({ toURL: () => null });
@@ -42,8 +45,8 @@ export default function OpenGroupCall({ navigation, route }) {
 
 	const myPeerConnections = [];
 
-	const [onMic, setOnMic] = useState(false);
-	const [onVideo, setOnVideo] = useState(true);
+	const [onMic, setOnMic] = useState(true);
+	const onVideo = useRef(true);
 
 	// 현재 방 인원수를 나타내는 state // 통화방에 입장/퇴장할 때 변경하면 될 것 같음
 	const [numOfUser, setNumOfUser] = useState(1);
@@ -52,11 +55,28 @@ export default function OpenGroupCall({ navigation, route }) {
 	const { isOpen, onToggle } = useDisclose();
 
 	const toggleMic = () => {
-		setOnMic(!onMic);
+		trueOnMic = !trueOnMic;
+		setOnMic(!trueOnMic);
+
+		llocalStream.getAudioTracks().forEach((track) => {
+			track.enabled = trueOnMic;
+		});
 	};
 
 	const toggleVideo = () => {
-		setOnVideo(!onVideo);
+		onVideo.current = !onVideo.current;
+
+		onVideo.current
+			? setLocalStream(llocalStream)
+			: setLocalStream({ toURL: () => null });
+
+		llocalStream.getVideoTracks().forEach((track) => {
+			track.enabled = onVideo.current;
+		});
+
+		// myPeerConnections.forEach((conn) => {
+		// 	conn.getLocalStreams()[0].getVideoTracks()[0].enabled = onVideo.current;
+		// });
 	};
 
 	const handleDisconnectBtn = () => {
@@ -69,13 +89,10 @@ export default function OpenGroupCall({ navigation, route }) {
 		const stream = await mediaDevices.getUserMedia({
 			audio: true,
 			video: {
-				mandatory: {
-					minWidth: 500, // Provide your own width, height and frame rate here
-					minHeight: 300,
-					minFrameRate: 30,
-				},
+				width: { min: 1024, ideal: 1280, max: 1920 },
+				height: { min: 776, ideal: 720, max: 1080 },
+				minFrameRate: 15,
 				facingMode: "user",
-				// optional: videoSourceId ? expo start --localhost --android[{ sourceId: videoSourceId }] : [],
 			},
 		});
 		setLocalStream(stream);
@@ -101,14 +118,11 @@ export default function OpenGroupCall({ navigation, route }) {
 			const curMyPC = new RTCPeerConnection({
 				iceServers: [
 					{
-						urls: "stun:stun.l.google.com:19302",
+						urls: "stun:20.78.169.27:3478",
 					},
-					{
-						urls: "stun:stun1.l.google.com:19302",
-					},
-					{
-						urls: "stun:stun2.l.google.com:19302",
-					},
+					// {
+					// 	urls: "stun:stun.l.google.com:19302",
+					// },
 				],
 			});
 
@@ -141,6 +155,13 @@ export default function OpenGroupCall({ navigation, route }) {
 			curMyPC.onaddstream = async (data) => {
 				console.log("On Add Stream");
 				await curMyPC.setRemoteStream(data.stream);
+
+				data.stream.getVideoTracks()[0].onunmute = () => {
+					curMyPC.setRemoteStream(data.stream);
+				};
+				data.stream.getVideoTracks()[0].onmute = () => {
+					curMyPC.setRemoteStream({ toURL: () => null });
+				};
 			};
 
 			return curMyPC;
