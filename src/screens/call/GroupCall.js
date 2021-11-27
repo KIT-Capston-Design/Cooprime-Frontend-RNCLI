@@ -419,43 +419,6 @@ export default function GroupCall({ navigation }) {
 	};
 
 	return (
-		// <View style={styles.container}>
-		// 	<View style={styles.videoContainer}>
-		// 		<View style={styles.video}>
-		// 			<RTCView
-		// 				streamURL={rStreamA.toURL()}
-		// 				style={styles.rtcVideo}
-		// 				mirror={true}
-		// 				objectFit={"cover"}
-		// 			/>
-		// 		</View>
-		// 		<View style={styles.video}>
-		// 			<RTCView
-		// 				streamURL={rStreamB.toURL()}
-		// 				style={styles.rtcVideo}
-		// 				mirror={true}
-		// 				objectFit={"cover"}
-		// 			/>
-		// 		</View>
-		// 	</View>
-		// 	<View style={styles.videoContainer}>
-		// 		<View style={styles.video}>
-		// 			<RTCView
-		// 				streamURL={rStreamC.toURL()}
-		// 				style={styles.rtcVideo}
-		// 				mirror={true}
-		// 				objectFit={"cover"}
-		// 			/>
-		// 		</View>
-		// 		<View style={styles.video}>
-		// 			<RTCView
-		// 				streamURL={lStream.toURL()}
-		// 				style={styles.rtcVideo}
-		// 				mirror={true}
-		// 				objectFit={"cover"}
-		// 			/>
-		// 		</View>
-		// 	</View>
 		<NativeBaseProvider flex="1">
 			<Box flex="1">
 				<HStack flex="1">
@@ -627,35 +590,9 @@ export default function GroupCall({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-	// container: { flex: 1, backgroundColor: "#eeeeee" },
-	// videoContainer: {
-	// 	flex: 1,
-	// 	position: "relative",
-	// 	flexDirection: "row",
-	// },
-	// video: {
-	// 	width: "100%",
-	// 	flex: 1,
-	// 	position: "relative",
-	// 	alignItems: "center",
-	// 	overflow: "hidden",
-	// 	borderRadius: 6,
-	// 	height: 400,
-	// 	backgroundColor: "#ffffff",
-	// 	borderColor: "#cccccc",
-	// 	borderWidth: 1.5,
-	// },
 	rtcVideo: {
 		height: "100%",
 		width: "100%",
 		backgroundColor: "#f0f0f0",
 	},
-	// callSetting: {
-	// 	backgroundColor: "#fff0ff",
-	// 	flexDirection: "row",
-	// 	justifyContent: "space-between",
-	// 	padding: 20,
-	// 	borderTopColor: "#aaaaaa",
-	// 	borderTopWidth: 0.5,
-	// },
 });
