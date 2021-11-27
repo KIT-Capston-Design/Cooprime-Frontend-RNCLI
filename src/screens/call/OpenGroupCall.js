@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FlashMessage, { showMessage } from "react-native-flash-message";
 import {
@@ -27,6 +28,7 @@ import {
 import InCallManager from "react-native-incall-manager";
 
 import { LogBox } from "react-native";
+import { greaterThan } from "react-native-reanimated";
 LogBox.ignoreLogs(["new NativeEventEmitter"]);
 LogBox.ignoreLogs(["Non-serializable values"]);
 
@@ -36,6 +38,7 @@ let llocalStream;
 
 let rStreamsStatus = { rStreamA: false, rStreamB: false, rStreamC: false };
 let trueOnMic = true; // State의 상식 밖 동작으로 인한 전역변수
+let trueOnSpeak = true; // State의 상식 밖 동작으로 인한 전역변수
 
 export default function OpenGroupCall({ navigation, route }) {
 	const [localStream, setLocalStream] = useState({ toURL: () => null });
@@ -47,6 +50,7 @@ export default function OpenGroupCall({ navigation, route }) {
 
 	const [onMic, setOnMic] = useState(true);
 	const onVideo = useRef(true);
+	const [onSpeak, setOnSpeak] = useState(true);
 
 	// 현재 방 인원수를 나타내는 state // 통화방에 입장/퇴장할 때 변경하면 될 것 같음
 	const [numOfUser, setNumOfUser] = useState(1);
@@ -66,9 +70,7 @@ export default function OpenGroupCall({ navigation, route }) {
 	const toggleVideo = () => {
 		onVideo.current = !onVideo.current;
 
-		onVideo.current
-			? setLocalStream(llocalStream)
-			: setLocalStream({ toURL: () => null });
+		onVideo.current ? setLocalStream(llocalStream) : setLocalStream({ toURL: () => null });
 
 		llocalStream.getVideoTracks().forEach((track) => {
 			track.enabled = onVideo.current;
@@ -76,6 +78,16 @@ export default function OpenGroupCall({ navigation, route }) {
 
 		// myPeerConnections.forEach((conn) => {
 		// 	conn.getLocalStreams()[0].getVideoTracks()[0].enabled = onVideo.current;
+		// });
+	};
+
+	const toggleSpeak = () => {
+		trueOnSpeak = !trueOnSpeak;
+		setOnSpeak(trueOnSpeak);
+
+		// speak 에 맞는 설정 필요해보입니다. (아래는 toggleMic 복붙 상태)
+		// llocalStream.getAudioTracks().forEach((track) => {
+		// 	track.enabled = trueOnMic;
 		// });
 	};
 
@@ -101,150 +113,150 @@ export default function OpenGroupCall({ navigation, route }) {
 		console.log("getMedia() End");
 	};
 
-	useEffect(() => {
-		console.log("-------OpenGroupCall useEffect-------");
+	// useEffect(() => {
+	// 	console.log("-------OpenGroupCall useEffect-------");
 
-		InCallManager.start({ media: "audio" });
-		InCallManager.setForceSpeakerphoneOn(true);
+	// 	InCallManager.start({ media: "audio" });
+	// 	InCallManager.setForceSpeakerphoneOn(true);
 
-		getMedia();
+	// 	getMedia();
 
-		roomId = route.params.roomId;
-		socket = route.params.socket;
-		setNumOfUser(route.params.numOfUser + 1);
-		// 화면에 사용자 입장/퇴장 메시지 출력
-		popUpMessage("HELLO :)");
+	// 	roomId = route.params.roomId;
+	// 	socket = route.params.socket;
+	// 	setNumOfUser(route.params.numOfUser + 1);
+	// 	// 화면에 사용자 입장/퇴장 메시지 출력
+	// 	popUpMessage("HELLO :)");
 
-		socket.onAny(popUpMessage);
+	// 	socket.onAny(popUpMessage);
 
-		const createNewPeerConnection = async (userSocketId) => {
-			const curMyPC = new RTCPeerConnection({
-				iceServers: [
-					{
-						urls: "stun:20.78.169.27:3478",
-					},
-					// {
-					// 	urls: "stun:stun.l.google.com:19302",
-					// },
-				],
-			});
+	// 	const createNewPeerConnection = async (userSocketId) => {
+	// 		const curMyPC = new RTCPeerConnection({
+	// 			iceServers: [
+	// 				{
+	// 					urls: "stun:20.78.169.27:3478",
+	// 				},
+	// 				// {
+	// 				// 	urls: "stun:stun.l.google.com:19302",
+	// 				// },
+	// 			],
+	// 		});
 
-			myPeerConnections.push(curMyPC);
+	// 		myPeerConnections.push(curMyPC);
 
-			curMyPC.userSocketId = userSocketId;
+	// 		curMyPC.userSocketId = userSocketId;
 
-			if (!rStreamsStatus.rStreamA) {
-				rStreamsStatus.rStreamA = true;
-				curMyPC.usedStream = "A";
-				curMyPC.setRemoteStream = setrStreamA;
-			} else if (!rStreamsStatus.rStreamB) {
-				rStreamsStatus.rStreamB = true;
-				curMyPC.usedStream = "B";
-				curMyPC.setRemoteStream = setrStreamB;
-			} else {
-				rStreamsStatus.rStreamC = true;
-				curMyPC.usedStream = "C";
-				curMyPC.setRemoteStream = setrStreamC;
-			}
+	// 		if (!rStreamsStatus.rStreamA) {
+	// 			rStreamsStatus.rStreamA = true;
+	// 			curMyPC.usedStream = "A";
+	// 			curMyPC.setRemoteStream = setrStreamA;
+	// 		} else if (!rStreamsStatus.rStreamB) {
+	// 			rStreamsStatus.rStreamB = true;
+	// 			curMyPC.usedStream = "B";
+	// 			curMyPC.setRemoteStream = setrStreamB;
+	// 		} else {
+	// 			rStreamsStatus.rStreamC = true;
+	// 			curMyPC.usedStream = "C";
+	// 			curMyPC.setRemoteStream = setrStreamC;
+	// 		}
 
-			console.log("localStream added", llocalStream.toURL());
-			curMyPC.addStream(llocalStream);
+	// 		console.log("localStream added", llocalStream.toURL());
+	// 		curMyPC.addStream(llocalStream);
 
-			curMyPC.onicecandidate = (data) => {
-				console.log("fire candidate");
-				socket.emit("ogc_ice", data.candidate, curMyPC.userSocketId);
-			};
+	// 		curMyPC.onicecandidate = (data) => {
+	// 			console.log("fire candidate");
+	// 			socket.emit("ogc_ice", data.candidate, curMyPC.userSocketId);
+	// 		};
 
-			curMyPC.onaddstream = async (data) => {
-				console.log("On Add Stream");
-				await curMyPC.setRemoteStream(data.stream);
+	// 		curMyPC.onaddstream = async (data) => {
+	// 			console.log("On Add Stream");
+	// 			await curMyPC.setRemoteStream(data.stream);
 
-				data.stream.getVideoTracks()[0].onunmute = () => {
-					curMyPC.setRemoteStream(data.stream);
-				};
-				data.stream.getVideoTracks()[0].onmute = () => {
-					curMyPC.setRemoteStream({ toURL: () => null });
-				};
-			};
+	// 			data.stream.getVideoTracks()[0].onunmute = () => {
+	// 				curMyPC.setRemoteStream(data.stream);
+	// 			};
+	// 			data.stream.getVideoTracks()[0].onmute = () => {
+	// 				curMyPC.setRemoteStream({ toURL: () => null });
+	// 			};
+	// 		};
 
-			return curMyPC;
-		};
-		socket.on("ogc_user_joins", async (userSocketId, numOfUser) => {
-			setNumOfUser(numOfUser + 1);
+	// 		return curMyPC;
+	// 	};
+	// 	socket.on("ogc_user_joins", async (userSocketId, numOfUser) => {
+	// 		setNumOfUser(numOfUser + 1);
 
-			// 들어오는 유저에 대한 RTCPeerConnection push & setting
+	// 		// 들어오는 유저에 대한 RTCPeerConnection push & setting
 
-			const curMyPC = await createNewPeerConnection(userSocketId);
+	// 		const curMyPC = await createNewPeerConnection(userSocketId);
 
-			// offer
-			console.log("create offer");
-			const offer = await curMyPC.createOffer();
+	// 		// offer
+	// 		console.log("create offer");
+	// 		const offer = await curMyPC.createOffer();
 
-			await curMyPC.setLocalDescription(offer);
+	// 		await curMyPC.setLocalDescription(offer);
 
-			console.log("sent the ogc_offer");
+	// 		console.log("sent the ogc_offer");
 
-			socket.emit("ogc_offer", offer, userSocketId);
-		});
+	// 		socket.emit("ogc_offer", offer, userSocketId);
+	// 	});
 
-		socket.on("ogc_offer", async (offer, userSocketId) => {
-			// 받은 offer를 통해 Connection, RTCPeerConnection 생성
+	// 	socket.on("ogc_offer", async (offer, userSocketId) => {
+	// 		// 받은 offer를 통해 Connection, RTCPeerConnection 생성
 
-			const curMyPC = await createNewPeerConnection(userSocketId);
+	// 		const curMyPC = await createNewPeerConnection(userSocketId);
 
-			await curMyPC.setRemoteDescription(new RTCSessionDescription(offer));
-			console.log("create answer");
-			const answer = await curMyPC.createAnswer();
-			curMyPC.setLocalDescription(answer);
-			socket.emit("ogc_answer", answer, userSocketId);
-			console.log("sent the ogc_answer");
-		});
+	// 		await curMyPC.setRemoteDescription(new RTCSessionDescription(offer));
+	// 		console.log("create answer");
+	// 		const answer = await curMyPC.createAnswer();
+	// 		curMyPC.setLocalDescription(answer);
+	// 		socket.emit("ogc_answer", answer, userSocketId);
+	// 		console.log("sent the ogc_answer");
+	// 	});
 
-		socket.on("ogc_answer", async (answer, userSocketId) => {
-			myPeerConnections.forEach(async (conn) => {
-				if (conn.userSocketId === userSocketId) {
-					await conn.setRemoteDescription(new RTCSessionDescription(answer));
-					console.log("set the answer");
-					return false;
-				}
-			});
-		});
+	// 	socket.on("ogc_answer", async (answer, userSocketId) => {
+	// 		myPeerConnections.forEach(async (conn) => {
+	// 			if (conn.userSocketId === userSocketId) {
+	// 				await conn.setRemoteDescription(new RTCSessionDescription(answer));
+	// 				console.log("set the answer");
+	// 				return false;
+	// 			}
+	// 		});
+	// 	});
 
-		socket.on("ogc_ice", (ice, userSocketId) => {
-			myPeerConnections.forEach((conn) => {
-				if (conn.userSocketId === userSocketId) {
-					conn.addIceCandidate(ice);
-					console.log("added ice");
-					return false;
-				}
-			});
-		});
+	// 	socket.on("ogc_ice", (ice, userSocketId) => {
+	// 		myPeerConnections.forEach((conn) => {
+	// 			if (conn.userSocketId === userSocketId) {
+	// 				conn.addIceCandidate(ice);
+	// 				console.log("added ice");
+	// 				return false;
+	// 			}
+	// 		});
+	// 	});
 
-		socket.on("ogc_user_leaves", (userSocketId, numOfUser) => {
-			setNumOfUser(numOfUser - 1);
+	// 	socket.on("ogc_user_leaves", (userSocketId, numOfUser) => {
+	// 		setNumOfUser(numOfUser - 1);
 
-			myPeerConnections.forEach((conn, index) => {
-				if (conn.userSocketId === userSocketId) {
-					conn.setRemoteStream({ toURL: () => null });
+	// 		myPeerConnections.forEach((conn, index) => {
+	// 			if (conn.userSocketId === userSocketId) {
+	// 				conn.setRemoteStream({ toURL: () => null });
 
-					if (conn.usedStream === "A") {
-						rStreamsStatus.rStreamA = false;
-					} else if (conn.usedStream === "B") {
-						rStreamsStatus.rStreamB = false;
-					} else {
-						rStreamsStatus.rStreamC = false;
-					}
+	// 				if (conn.usedStream === "A") {
+	// 					rStreamsStatus.rStreamA = false;
+	// 				} else if (conn.usedStream === "B") {
+	// 					rStreamsStatus.rStreamB = false;
+	// 				} else {
+	// 					rStreamsStatus.rStreamC = false;
+	// 				}
 
-					conn.close();
-					myPeerConnections.splice(index, 1);
-				}
-			});
-		});
+	// 				conn.close();
+	// 				myPeerConnections.splice(index, 1);
+	// 			}
+	// 		});
+	// 	});
 
-		return () => {
-			InCallManager.stop();
-		};
-	}, []);
+	// 	return () => {
+	// 		InCallManager.stop();
+	// 	};
+	// }, []);
 
 	const finalize = () => {
 		//퇴장 처리
@@ -354,48 +366,51 @@ export default function OpenGroupCall({ navigation, route }) {
 									as={MaterialCommunityIcons}
 									size="6"
 									name="phone-off"
-									_dark={{
-										color: "warmGray.50",
-									}}
-									color="warmGray.50"
+									color="white"
 								/>
 							}
 						/>
 						<IconButton
 							mb="4"
 							variant="solid"
-							bg="yellow.400"
-							colorScheme="yellow"
+							bg={onMic ? "green.500" : "gray.600"}
+							opacity={onMic ? 100 : 70}
+							colorScheme="green"
 							borderRadius="full"
 							onPress={toggleMic}
 							icon={
 								<Icon
 									as={MaterialCommunityIcons}
-									_dark={{
-										color: "warmGray.50",
-									}}
 									size="6"
-									name="microphone"
-									color="warmGray.50"
+									name={onMic ? "microphone" : "microphone-off"}
+									color="white"
 								/>
 							}
 						/>
 						<IconButton
 							mb="4"
 							variant="solid"
-							bg="teal.400"
+							bg={onSpeak ? "lime.500" : "gray.600"}
+							opacity={onSpeak ? 100 : 70}
+							onPress={toggleSpeak}
+							colorScheme="lime"
+							borderRadius="full"
+							icon={<Icon as={Ionicons} size="6" name="megaphone" color="white" />}
+						/>
+						<IconButton
+							mb="4"
+							variant="solid"
+							bg={onVideo.current ? "teal.500" : "gray.600"}
+							opacity={onVideo.current ? 100 : 70}
 							colorScheme="teal"
 							borderRadius="full"
 							onPress={toggleVideo}
 							icon={
 								<Icon
 									as={MaterialCommunityIcons}
-									_dark={{
-										color: "warmGray.50",
-									}}
 									size="6"
-									name="video"
-									color="warmGray.50"
+									name={onVideo.current ? "video" : "video-off"}
+									color="white"
 								/>
 							}
 						/>
@@ -405,17 +420,7 @@ export default function OpenGroupCall({ navigation, route }) {
 							bg="red.500"
 							colorScheme="red"
 							borderRadius="full"
-							icon={
-								<Icon
-									as={MaterialIcons}
-									size="6"
-									name="report"
-									_dark={{
-										color: "warmGray.50",
-									}}
-									color="warmGray.50"
-								/>
-							}
+							icon={<Icon as={MaterialIcons} size="6" name="report" color="white" />}
 						/>
 					</Stagger>
 				</Box>
