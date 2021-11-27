@@ -38,7 +38,7 @@ let llocalStream;
 
 let rStreamsStatus = { rStreamA: false, rStreamB: false, rStreamC: false };
 let trueOnMic = true; // State의 상식 밖 동작으로 인한 전역변수
-let trueOnSpeak = true; // State의 상식 밖 동작으로 인한 전역변수
+let trueOnSpeak = false; // State의 상식 밖 동작으로 인한 전역변수
 
 export default function OpenGroupCall({ navigation, route }) {
 	const [localStream, setLocalStream] = useState({ toURL: () => null });
@@ -50,7 +50,7 @@ export default function OpenGroupCall({ navigation, route }) {
 
 	const [onMic, setOnMic] = useState(true);
 	const onVideo = useRef(true);
-	const [onSpeak, setOnSpeak] = useState(true);
+	const [onSpeak, setOnSpeak] = useState(false);
 
 	// 현재 방 인원수를 나타내는 state // 통화방에 입장/퇴장할 때 변경하면 될 것 같음
 	const [numOfUser, setNumOfUser] = useState(1);
@@ -60,7 +60,7 @@ export default function OpenGroupCall({ navigation, route }) {
 
 	const toggleMic = () => {
 		trueOnMic = !trueOnMic;
-		setOnMic(!trueOnMic);
+		setOnMic(trueOnMic);
 
 		socket.myStream.getAudioTracks().forEach((track) => {
 			track.enabled = trueOnMic;
@@ -86,7 +86,7 @@ export default function OpenGroupCall({ navigation, route }) {
 	const toggleSpeak = () => {
 		trueOnSpeak = !trueOnSpeak;
 		setOnSpeak(trueOnSpeak);
-
+		InCallManager.setForceSpeakerphoneOn(trueOnSpeak);
 		// speak 에 맞는 설정 필요해보입니다. (아래는 toggleMic 복붙 상태)
 		// llocalStream.getAudioTracks().forEach((track) => {
 		// 	track.enabled = trueOnMic;
@@ -102,7 +102,6 @@ export default function OpenGroupCall({ navigation, route }) {
 		console.log("-------OpenGroupCall useEffect-------");
 
 		InCallManager.start({ media: "audio" });
-		//		InCallManager.setForceSpeakerphoneOn(true);
 
 		roomId = route.params.roomId;
 		socket = route.params.socket;
