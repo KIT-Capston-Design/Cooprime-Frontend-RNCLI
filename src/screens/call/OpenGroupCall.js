@@ -3,7 +3,6 @@ import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FlashMessage, { showMessage } from "react-native-flash-message";
-import { io } from "socket.io-client";
 import {
 	RTCPeerConnection,
 	RTCIceCandidate,
@@ -24,19 +23,12 @@ import {
 	useDisclose,
 	Badge,
 } from "native-base";
-import { taggedTemplateExpression } from "@babel/types";
-
-// 서버 : "http://kitcapstone.codns.com"
-// PC  : "http://localhost"
-// 로컬 : "http://192.168.0.9"
-// 승형PC : "aitta.iptime.org"
-
-const SERVER_DOMAIN = "aitta.iptime.org";
-const SERVER_PORT = "3000";
 
 let socket;
 let roomId;
 let llocalStream;
+
+let rStreamsStatus = { rStreamA: false, rStreamB: false, rStreamC: false };
 
 export default function OpenGroupCall({ navigation, route }) {
 	const [localStream, setLocalStream] = useState({ toURL: () => null });
@@ -85,29 +77,6 @@ export default function OpenGroupCall({ navigation, route }) {
 		setLocalStream(stream);
 		llocalStream = stream;
 		console.log("setted LocalStream", stream);
-		// await mediaDevices
-		// 	.getUserMedia({
-		// 		audio: true,
-		// 		video: {
-		// 			mandatory: {
-		// 				minWidth: 500, // Provide your own width, height and frame rate here
-		// 				minHeight: 300,
-		// 				minFrameRate: 30,
-		// 			},
-		// 			facingMode: "user",
-		// 			// optional: videoSourceId ? expo start --localhost --android[{ sourceId: videoSourceId }] : [],
-		// 		},
-		// 	})
-		// 	.then((stream) => {
-		// 		// 스트림 얻기 성공
-		// 		setLocalStream(stream);
-		// 		console.log("get myStream");
-		// 	})
-		// 	.catch((error) => {
-		// 		// 스트림 얻기 실패
-		// 		console.log(error);
-		// 	});
-
 		console.log("getMedia() End");
 	};
 
@@ -120,7 +89,7 @@ export default function OpenGroupCall({ navigation, route }) {
 		socket = route.params.socket;
 		setNumOfUser(route.params.numOfUser + 1);
 		// 화면에 사용자 입장/퇴장 메시지 출력
-		popUpMessage("HELLOHELLO");
+		popUpMessage("HELLO :)");
 
 		socket.onAny(popUpMessage);
 
@@ -143,11 +112,17 @@ export default function OpenGroupCall({ navigation, route }) {
 
 			curMyPC.userSocketId = userSocketId;
 
-			if (rStreamA.toURL() === null) {
+			if (!rStreamsStatus.rStreamA) {
+				rStreamsStatus.rStreamA = true;
+				curMyPC.usedStream = "A";
 				curMyPC.setRemoteStream = setrStreamA;
-			} else if (rStreamB.toURL() === null) {
+			} else if (!rStreamsStatus.rStreamB) {
+				rStreamsStatus.rStreamB = true;
+				curMyPC.usedStream = "B";
 				curMyPC.setRemoteStream = setrStreamB;
 			} else {
+				rStreamsStatus.rStreamC = true;
+				curMyPC.usedStream = "C";
 				curMyPC.setRemoteStream = setrStreamC;
 			}
 
@@ -223,6 +198,15 @@ export default function OpenGroupCall({ navigation, route }) {
 			myPeerConnections.forEach((conn, index) => {
 				if (conn.userSocketId === userSocketId) {
 					conn.setRemoteStream({ toURL: () => null });
+
+					if (conn.usedStream === "A") {
+						rStreamsStatus.rStreamA = false;
+					} else if (conn.usedStream === "B") {
+						rStreamsStatus.rStreamB = false;
+					} else {
+						rStreamsStatus.rStreamC = false;
+					}
+
 					conn.close();
 					myPeerConnections.splice(index, 1);
 				}

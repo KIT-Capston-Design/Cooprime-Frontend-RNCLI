@@ -19,14 +19,13 @@ import { Value } from "react-native-reanimated";
 import { ControlledPropUpdatedSelectedItem } from "native-base/lib/typescript/components/composites/Typeahead/useTypeahead/types";
 ////
 
-const SERVER_DOMAIN = "http://192.168.0.9";
+const SERVER_DOMAIN = "http://aitta.iptime.org";
 const SERVER_PORT = "3000";
 
 let socket;
 
 export const OpenGroupCallList = (prop) => {
 	const [data, setData] = useState([]);
-	const [offset, setOffSet] = useState(0);
 	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
