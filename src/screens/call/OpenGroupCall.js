@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FlashMessage, { showMessage } from "react-native-flash-message";
 import {
@@ -27,6 +28,7 @@ import {
 import InCallManager from "react-native-incall-manager";
 
 import { LogBox } from "react-native";
+import { greaterThan } from "react-native-reanimated";
 LogBox.ignoreLogs(["new NativeEventEmitter"]);
 LogBox.ignoreLogs(["Non-serializable values"]);
 
@@ -36,6 +38,7 @@ let llocalStream;
 
 let rStreamsStatus = { rStreamA: false, rStreamB: false, rStreamC: false };
 let trueOnMic = true; // State의 상식 밖 동작으로 인한 전역변수
+let trueOnSpeak = true; // State의 상식 밖 동작으로 인한 전역변수
 
 export default function OpenGroupCall({ navigation, route }) {
 	const [localStream, setLocalStream] = useState({ toURL: () => null });
@@ -47,6 +50,7 @@ export default function OpenGroupCall({ navigation, route }) {
 
 	const [onMic, setOnMic] = useState(true);
 	const onVideo = useRef(true);
+	const [onSpeak, setOnSpeak] = useState(true);
 
 	// 현재 방 인원수를 나타내는 state // 통화방에 입장/퇴장할 때 변경하면 될 것 같음
 	const [numOfUser, setNumOfUser] = useState(1);
@@ -76,6 +80,16 @@ export default function OpenGroupCall({ navigation, route }) {
 
 		// myPeerConnections.forEach((conn) => {
 		// 	conn.getLocalStreams()[0].getVideoTracks()[0].enabled = onVideo.current;
+		// });
+	};
+
+	const toggleSpeak = () => {
+		trueOnSpeak = !trueOnSpeak;
+		setOnSpeak(trueOnSpeak);
+
+		// speak 에 맞는 설정 필요해보입니다. (아래는 toggleMic 복붙 상태)
+		// llocalStream.getAudioTracks().forEach((track) => {
+		// 	track.enabled = trueOnMic;
 		// });
 	};
 
@@ -335,48 +349,53 @@ export default function OpenGroupCall({ navigation, route }) {
 									as={MaterialCommunityIcons}
 									size="6"
 									name="phone-off"
-									_dark={{
-										color: "warmGray.50",
-									}}
-									color="warmGray.50"
+									color="white"
 								/>
 							}
 						/>
 						<IconButton
 							mb="4"
 							variant="solid"
-							bg="yellow.400"
-							colorScheme="yellow"
+							bg={onMic ? "green.500" : "gray.600"}
+							opacity={onMic ? 100 : 70}
+							colorScheme="green"
 							borderRadius="full"
 							onPress={toggleMic}
 							icon={
 								<Icon
 									as={MaterialCommunityIcons}
-									_dark={{
-										color: "warmGray.50",
-									}}
 									size="6"
-									name="microphone"
-									color="warmGray.50"
+									name={onMic ? "microphone" : "microphone-off"}
+									color="white"
 								/>
 							}
 						/>
 						<IconButton
 							mb="4"
 							variant="solid"
-							bg="teal.400"
+							bg={onSpeak ? "lime.500" : "gray.600"}
+							opacity={onSpeak ? 100 : 70}
+							onPress={toggleSpeak}
+							colorScheme="lime"
+							borderRadius="full"
+							icon={
+								<Icon as={Ionicons} size="6" name="megaphone" color="white" />
+							}
+						/>
+						<IconButton
+							mb="4"
+							variant="solid"
+							bg={onVideo.current ? "teal.500" : "gray.600"}
+							opacity={onVideo.current ? 100 : 70}
 							colorScheme="teal"
 							borderRadius="full"
 							onPress={toggleVideo}
 							icon={
 								<Icon
 									as={MaterialCommunityIcons}
-									_dark={{
-										color: "warmGray.50",
-									}}
 									size="6"
-									name="video"
-									color="warmGray.50"
+									name={onVideo.current ? "video" : "video-off"}
+									color="white"
 								/>
 							}
 						/>
@@ -387,15 +406,7 @@ export default function OpenGroupCall({ navigation, route }) {
 							colorScheme="red"
 							borderRadius="full"
 							icon={
-								<Icon
-									as={MaterialIcons}
-									size="6"
-									name="report"
-									_dark={{
-										color: "warmGray.50",
-									}}
-									color="warmGray.50"
-								/>
+								<Icon as={MaterialIcons} size="6" name="report" color="white" />
 							}
 						/>
 					</Stagger>
