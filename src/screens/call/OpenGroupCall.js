@@ -58,7 +58,7 @@ export default function OpenGroupCall({ navigation, route }) {
 		trueOnMic = !trueOnMic;
 		setOnMic(!trueOnMic);
 
-		llocalStream.getAudioTracks().forEach((track) => {
+		socket.myStream.getAudioTracks().forEach((track) => {
 			track.enabled = trueOnMic;
 		});
 	};
@@ -67,10 +67,10 @@ export default function OpenGroupCall({ navigation, route }) {
 		onVideo.current = !onVideo.current;
 
 		onVideo.current
-			? setLocalStream(llocalStream)
+			? setLocalStream(socket.myStream)
 			: setLocalStream({ toURL: () => null });
 
-		llocalStream.getVideoTracks().forEach((track) => {
+		socket.myStream.getVideoTracks().forEach((track) => {
 			track.enabled = onVideo.current;
 		});
 
@@ -83,34 +83,18 @@ export default function OpenGroupCall({ navigation, route }) {
 		// 피어간 연결 종료 후 이전 화면으로
 		finalize();
 	};
-	const getMedia = async () => {
-		console.log("getMedia() Start");
-
-		const stream = await mediaDevices.getUserMedia({
-			audio: true,
-			video: {
-				width: { min: 1024, ideal: 1280, max: 1920 },
-				height: { min: 776, ideal: 720, max: 1080 },
-				minFrameRate: 15,
-				facingMode: "user",
-			},
-		});
-		setLocalStream(stream);
-		llocalStream = stream;
-		console.log("setted LocalStream", stream);
-		console.log("getMedia() End");
-	};
 
 	useEffect(() => {
 		console.log("-------OpenGroupCall useEffect-------");
 
 		InCallManager.start({ media: "audio" });
-		InCallManager.setForceSpeakerphoneOn(true);
-
-		getMedia();
+		//		InCallManager.setForceSpeakerphoneOn(true);
 
 		roomId = route.params.roomId;
 		socket = route.params.socket;
+		setLocalStream(socket.myStream); //
+		console.log(socket.myStream);
+
 		setNumOfUser(route.params.numOfUser + 1);
 		// 화면에 사용자 입장/퇴장 메시지 출력
 		popUpMessage("HELLO :)");
@@ -147,11 +131,10 @@ export default function OpenGroupCall({ navigation, route }) {
 				curMyPC.setRemoteStream = setrStreamC;
 			}
 
-			console.log("localStream added", llocalStream.toURL());
-			curMyPC.addStream(llocalStream);
+			console.log("localStream added");
+			curMyPC.addStream(socket.myStream);
 
 			curMyPC.onicecandidate = (data) => {
-				console.log("fire candidate");
 				socket.emit("ogc_ice", data.candidate, curMyPC.userSocketId);
 			};
 
@@ -214,7 +197,6 @@ export default function OpenGroupCall({ navigation, route }) {
 			myPeerConnections.forEach((conn) => {
 				if (conn.userSocketId === userSocketId) {
 					conn.addIceCandidate(ice);
-					console.log("added ice");
 					return false;
 				}
 			});
@@ -255,9 +237,9 @@ export default function OpenGroupCall({ navigation, route }) {
 		console.log("emit ogc_observe_roomlist");
 		socket.emit("ogc_observe_roomlist");
 
-		llocalStream.getTracks().forEach((track) => {
-			track.stop();
-		});
+		// socket.myStream.getTracks().forEach((track) => {
+		// 	track.stop();
+		// });
 
 		myPeerConnections.forEach((conn) => {
 			conn.close();
@@ -275,7 +257,6 @@ export default function OpenGroupCall({ navigation, route }) {
 	};
 
 	const popUpMessage = (message) => {
-		console.log("popUpMessage()", message);
 		/*화면에 메시지 출력*/
 		showMessage({
 			message: message,

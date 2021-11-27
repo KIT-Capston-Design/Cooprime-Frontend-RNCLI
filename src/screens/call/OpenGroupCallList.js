@@ -23,10 +23,10 @@ const SERVER_DOMAIN = "http://aitta.iptime.org";
 const SERVER_PORT = "3000";
 
 let socket;
+let myStream;
 
 export const OpenGroupCallList = (prop) => {
 	const [data, setData] = useState([]);
-	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
 		//Initialize Socket
@@ -39,7 +39,6 @@ export const OpenGroupCallList = (prop) => {
 			socket.onAny((event) => {
 				console.log("receive", event);
 			});
-			getData();
 
 			console.log("socket initialized");
 
@@ -53,40 +52,29 @@ export const OpenGroupCallList = (prop) => {
 				setData(roomInfList);
 			});
 
-			return () => {
-				// unmount (화면 이탈 시)
-				// 방 목록 구독 탈퇴 요청
-				socket.emit("ogc_unobserve_roomlist");
-				console.log("emit ogc_unobserve_roomlist");
-			};
+			(async () => {
+				const stream = await mediaDevices.getUserMedia({
+					audio: true,
+					video: {
+						width: { min: 1024, ideal: 1280, max: 1920 },
+						height: { min: 776, ideal: 720, max: 1080 },
+						minFrameRate: 15,
+						facingMode: "user",
+					},
+				});
+				socket.myStream = stream;
+			})();
+
+			// return () => {
+			// 	// unmount (화면 이탈 시)
+			// 	// 방 목록 구독 탈퇴 요청
+			// 	socket.emit("ogc_unobserve_roomlist");
+			// 	console.log("emit ogc_unobserve_roomlist");
+			// };
 		})();
 
 		//
 	}, []);
-
-	const getData = () => {
-		setLoading(true);
-
-		// setData([
-		// 	{
-		// 		id: 1,
-		// 		title: "TEST",
-		// 		count: 1,
-		// 	},
-		// ]);
-
-		// 공개 채팅방 정보 읽어오기
-		// fetch("http://jsonplaceholder.typicode.com/posts")
-		//   .then((res) => res.json())
-		//   .then((res) => setData(data.concat(res.slice(offset, offset + LIMIT))))
-		//   .then(() => {
-		//     setOffset(offset + LIMIT);
-		//     setLoading(false);
-		//   })
-		//   .catch((e) => {
-		//     setLoading(false);
-		//   });
-	};
 
 	const roomItemTouchHandler = (item) => {
 		//채팅방 입장
@@ -96,7 +84,6 @@ export const OpenGroupCallList = (prop) => {
 	const isSucc = (roomId, cnt) => {
 		if (roomId) {
 			console.log("roomId", roomId);
-			// 차후 대기화면으로 이동하여 webRTC 연결 설정하는 코드 필요
 			prop.enterOGCRoom(roomId, cnt);
 		} else {
 		}
@@ -133,13 +120,7 @@ export const OpenGroupCallList = (prop) => {
 		);
 	};
 
-	const onEndReached = () => {
-		if (loading) {
-			return;
-		} else {
-			getData();
-		}
-	};
+	const onEndReached = () => {};
 
 	return (
 		<LinearGradient
@@ -166,12 +147,12 @@ export default function OpenGroupCall({ navigation }) {
 	const createOGCRoom = (roomInfo) => {
 		console.log("emit ogc_room_create");
 		socket.emit("ogc_room_create", JSON.stringify(roomInfo), (roomId) => {
-			console.log("방 생성 후 입장 완료", roomId);
+			console.log("방 생성 후 입장 완료");
 			enterOGCRoom(roomId, 0);
 		});
 	};
 
-	const enterOGCRoom = (roomId, numOfUser) => {
+	const enterOGCRoom = async (roomId, numOfUser) => {
 		socket.emit("ogc_unobserve_roomlist");
 
 		navigation.navigate("OpenGroupCall", {
