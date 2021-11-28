@@ -76,8 +76,20 @@ export const OpenGroupCallList = (prop) => {
 		//
 	}, []);
 
-	const roomItemTouchHandler = (item) => {
+	const roomItemTouchHandler = async (item) => {
 		//채팅방 입장
+		await (async () => {
+			const stream = await mediaDevices.getUserMedia({
+				audio: true,
+				video: {
+					width: { min: 1024, ideal: 1280, max: 1920 },
+					height: { min: 776, ideal: 720, max: 1080 },
+					minFrameRate: 15,
+					facingMode: "user",
+				},
+			});
+			socket.myStream = stream;
+		})();
 		socket.emit("ogc_enter_room", item.roomId, isSucc);
 	};
 

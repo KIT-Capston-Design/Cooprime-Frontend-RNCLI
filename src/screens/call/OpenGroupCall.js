@@ -255,9 +255,9 @@ export default function OpenGroupCall({ navigation, route }) {
 		console.log("emit ogc_observe_roomlist");
 		socket.emit("ogc_observe_roomlist");
 
-		// socket.myStream.getTracks().forEach((track) => {
-		// 	track.stop();
-		// });
+		socket.myStream.getTracks().forEach((track) => {
+			track.stop();
+		});
 
 		myPeerConnections.forEach((conn) => {
 			conn.setRemoteStream({ toURL: () => null });
