@@ -4,6 +4,7 @@ import ReportModal from "../../components/ReportModal";
 import Loading from "../../components/Loading";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import Ionicons from "react-native-vector-icons/Ionicons";
 import { io } from "socket.io-client";
 import {
   RTCPeerConnection,
@@ -15,6 +16,14 @@ import {
   mediaDevices,
   registerGlobals,
 } from "react-native-webrtc";
+import {
+  Box,
+  NativeBaseProvider,
+  Stagger,
+  IconButton,
+  Icon,
+  useDisclose,
+} from "native-base";
 import InCallManager from "react-native-incall-manager";
 
 // const SERVER_DOMAIN = "http://KITCapstone.iptime.org";
@@ -31,9 +40,12 @@ export default function OneToOneCall({ navigation }) {
   const [remoteStream, setRemoteStream] = useState({ toURL: () => null });
   const [onMic, setOnMic] = useState(false);
   const onVideo = useRef(true);
+  const [onSpeak, setOnSpeak] = useState(false);
+
+  // "..." 단추 클릭시 메뉴 ON/OFF
+  const { isOpen, onToggle } = useDisclose();
   const [showModal, setShowModal] = useState(false); // 신고 팝업창 활성화 변수
-  // 통화 화면 들어가기전 로딩 화면 ON/OFF 변수
-  const [loading, setLoading] = useState(true);
+
   const [myPeerConnection, setMyPeerConnection] = useState(
     // 우리 서버 : stun:20.78.169.27:3478
     new RTCPeerConnection({
@@ -70,6 +82,12 @@ export default function OneToOneCall({ navigation }) {
       onVideo.current;
   };
 
+  const toggleSpeak = () => {
+    setOnSpeak(!onSpeak);
+
+    // localStream과 관련된 코드 필요
+  };
+
   useEffect(async () => {
     console.log("-----------------useEffect----------------");
 
@@ -101,11 +119,6 @@ export default function OneToOneCall({ navigation }) {
     return () => {
       InCallManager.stop();
     };
-
-    if (remoteStream != undefined) {
-      console.log("통화 화면으로 연결");
-      setLoading(false);
-    }
   }, []);
 
   const initSocket = async () => {
@@ -213,9 +226,9 @@ export default function OneToOneCall({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.videoContainer}>
-        <View style={styles.remoteVideos}>
+    <NativeBaseProvider flex="1">
+      <Box style={styles.videoContainer}>
+        <Box style={styles.remoteVideos}>
           <RTCView
             streamURL={remoteStream.toURL()}
             style={styles.remoteVideo}
@@ -223,8 +236,8 @@ export default function OneToOneCall({ navigation }) {
             zOrder={999}
             objectFit={"cover"}
           />
-        </View>
-        <View style={styles.localVideos}>
+        </Box>
+        <Box style={styles.localVideos}>
           <RTCView
             streamURL={localStream.toURL()}
             style={styles.localVideo}
@@ -232,36 +245,139 @@ export default function OneToOneCall({ navigation }) {
             zOrder={1}
             objectFit={"cover"}
           />
-        </View>
-      </View>
-      <View style={styles.callSetting}>
-        <TouchableOpacity onPress={toggleMic}>
-          <MaterialCommunityIcons
-            name={onMic ? "volume-mute" : "volume-source"}
-            size={iconSize}
-            color={onMic ? "grey" : "red"}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={toggleVideo}>
-          <MaterialIcons
-            name={onVideo.current ? "videocam" : "videocam-off"}
-            size={iconSize}
-            color={onVideo.current ? "#05ff05" : "red"}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={handleDisconnectBtn}>
-          <MaterialCommunityIcons
-            name="phone-off"
-            size={iconSize}
-            color="red"
-          />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={openModal}>
-          <MaterialIcons name="report" size={iconSize} color="red" />
-        </TouchableOpacity>
-      </View>
+        </Box>
+      </Box>
+      <Box position="absolute" bottom="5" left="5">
+        <Box alignItems="center">
+          <Stagger
+            visible={isOpen}
+            initial={{
+              opacity: 0,
+              scale: 0,
+              translateY: 34,
+            }}
+            animate={{
+              translateY: 0,
+              scale: 1,
+              opacity: 1,
+              transition: {
+                type: "spring",
+                mass: 0.8,
+                stagger: {
+                  offset: 30,
+                  reverse: true,
+                },
+              },
+            }}
+            exit={{
+              translateY: 34,
+              scale: 0.5,
+              opacity: 0,
+              transition: {
+                duration: 100,
+                stagger: {
+                  offset: 30,
+                  reverse: true,
+                },
+              },
+            }}
+          >
+            <IconButton
+              mb="4"
+              variant="solid"
+              bg="red.500"
+              colorScheme="red"
+              borderRadius="full"
+              onPress={handleDisconnectBtn}
+              icon={
+                <Icon
+                  as={MaterialCommunityIcons}
+                  size="6"
+                  name="phone-off"
+                  color="white"
+                />
+              }
+            />
+            <IconButton
+              mb="4"
+              variant="solid"
+              bg={onMic ? "green.500" : "gray.600"}
+              opacity={onMic ? 100 : 70}
+              colorScheme="green"
+              borderRadius="full"
+              onPress={toggleMic}
+              icon={
+                <Icon
+                  as={MaterialCommunityIcons}
+                  size="6"
+                  name={onMic ? "microphone" : "microphone-off"}
+                  color="white"
+                />
+              }
+            />
+            <IconButton
+              mb="4"
+              variant="solid"
+              bg={onSpeak ? "lime.500" : "gray.600"}
+              opacity={onSpeak ? 100 : 70}
+              onPress={toggleSpeak}
+              colorScheme="lime"
+              borderRadius="full"
+              icon={
+                <Icon as={Ionicons} size="6" name="megaphone" color="white" />
+              }
+            />
+            <IconButton
+              mb="4"
+              variant="solid"
+              bg={onVideo.current ? "teal.500" : "gray.600"}
+              opacity={onVideo.current ? 100 : 70}
+              colorScheme="teal"
+              borderRadius="full"
+              onPress={toggleVideo}
+              icon={
+                <Icon
+                  as={MaterialCommunityIcons}
+                  size="6"
+                  name={onVideo.current ? "video" : "video-off"}
+                  color="white"
+                />
+              }
+            />
+            <IconButton
+              mb="4"
+              variant="solid"
+              bg="red.500"
+              colorScheme="red"
+              onPress={openModal}
+              borderRadius="full"
+              icon={
+                <Icon as={MaterialIcons} size="6" name="report" color="white" />
+              }
+            />
+          </Stagger>
+        </Box>
+        <IconButton
+          variant="solid"
+          borderRadius="full"
+          size="lg"
+          onPress={onToggle}
+          bg="cyan.400"
+          icon={
+            <Icon
+              as={MaterialCommunityIcons}
+              size="6"
+              name="dots-horizontal"
+              color="warmGray.50"
+              _dark={{
+                color: "warmGray.50",
+              }}
+            />
+          }
+        />
+      </Box>
       <ReportModal showModal={showModal} setShowModal={setShowModal} />
-    </View>
+    </NativeBaseProvider>
   );
 }
 
@@ -303,14 +419,12 @@ const styles = StyleSheet.create({
     height: "100%",
     width: "100%",
     backgroundColor: "#009999",
-    zIndex: 999,
   },
   remoteVideo: {
     // flex: 1,
     height: "100%",
     width: "100%",
     backgroundColor: "#000000",
-    zIndex: -1,
   },
   callSetting: {
     backgroundColor: "#fff0ff",
