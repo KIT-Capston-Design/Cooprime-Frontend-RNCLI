@@ -25,10 +25,11 @@ import {
   useDisclose,
 } from "native-base";
 import InCallManager from "react-native-incall-manager";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // const SERVER_DOMAIN = "http://KITCapstone.iptime.org";
 const SERVER_DOMAIN = "http://KITCapstone.iptime.org";
-const SERVER_PORT = "3000";
+const SERVER_PORT = "3002";
 
 let socket;
 let roomName;
@@ -176,8 +177,17 @@ export default function OneToOneCall({ navigation }) {
   };
 
   const initCall = async () => {
+    const tags = [];
+    const TAGS_STORAGE_KEY = "@matchTags";
+
     console.log("sent random_one_to_one");
-    socket.emit("random_one_to_one");
+
+    const data = JSON.parse(await AsyncStorage.getItem(TAGS_STORAGE_KEY));
+    for (const item in data) {
+      tags.push(data[item].tagName);
+    }
+
+    socket.emit("random_one_to_one", JSON.stringify(tags));
   };
 
   /*
