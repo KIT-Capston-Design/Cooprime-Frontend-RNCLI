@@ -28,7 +28,7 @@ import {
 import InCallManager from "react-native-incall-manager";
 
 import { LogBox } from "react-native";
-import { greaterThan } from "react-native-reanimated";
+
 LogBox.ignoreLogs(["new NativeEventEmitter"]);
 LogBox.ignoreLogs(["Non-serializable values"]);
 
@@ -76,20 +76,12 @@ export default function OpenGroupCall({ navigation, route }) {
 		socket.myStream.getVideoTracks().forEach((track) => {
 			track.enabled = onVideo.current;
 		});
-
-		// myPeerConnections.forEach((conn) => {
-		// 	conn.getLocalStreams()[0].getVideoTracks()[0].enabled = onVideo.current;
-		// });
 	};
 
 	const toggleSpeak = () => {
 		trueOnSpeak = !trueOnSpeak;
 		setOnSpeak(trueOnSpeak);
 		InCallManager.setForceSpeakerphoneOn(trueOnSpeak);
-		// speak 에 맞는 설정 필요해보입니다. (아래는 toggleMic 복붙 상태)
-		// llocalStream.getAudioTracks().forEach((track) => {
-		// 	track.enabled = trueOnMic;
-		// });
 	};
 
 	useEffect(() => {
@@ -103,10 +95,6 @@ export default function OpenGroupCall({ navigation, route }) {
 
 		setNumOfUser(route.params.numOfUser + 1);
 
-		// onVideo = useRef(true);
-		// trueOnMic = true;
-		// trueOnSpeak = false;
-
 		// 화면에 사용자 입장/퇴장 메시지 출력
 		popUpMessage("HELLO :)");
 
@@ -118,9 +106,9 @@ export default function OpenGroupCall({ navigation, route }) {
 					{
 						urls: "stun:20.78.169.27:3478",
 					},
-					// {
-					// 	urls: "stun:stun.l.google.com:19302",
-					// },
+					{
+						urls: "stun:stun.l.google.com:19302",
+					},
 				],
 			});
 
@@ -245,16 +233,6 @@ export default function OpenGroupCall({ navigation, route }) {
 	};
 
 	const finalize = () => {
-		socket.offAny();
-
-		//퇴장 처리
-		console.log("emit ogc_exit_room");
-		socket.emit("ogc_exit_room", roomId);
-
-		console.log("exit");
-		console.log("emit ogc_observe_roomlist");
-		socket.emit("ogc_observe_roomlist");
-
 		socket.myStream.getTracks().forEach((track) => {
 			track.stop();
 		});
@@ -264,14 +242,23 @@ export default function OpenGroupCall({ navigation, route }) {
 			conn.close();
 		});
 
-		console.log(myPeerConnections);
+		//퇴장 처리
+		console.log("emit ogc_exit_room");
+		socket.emit("ogc_exit_room", roomId);
+
+		console.log("exit");
+		console.log("emit ogc_observe_roomlist");
+		socket.emit("ogc_observe_roomlist");
 
 		// 이벤트 제거
+
+		socket.offAny();
 		socket.removeAllListeners("ogc_user_joins");
 		socket.removeAllListeners("ogc_user_leaves");
 		socket.removeAllListeners("ogc_offer");
 		socket.removeAllListeners("ogc_answer");
 		socket.removeAllListeners("ogc_ice");
+
 		navigation.pop();
 	};
 
