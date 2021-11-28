@@ -34,7 +34,6 @@ LogBox.ignoreLogs(["Non-serializable values"]);
 
 let socket;
 let roomId;
-let llocalStream;
 
 let rStreamsStatus = { rStreamA: false, rStreamB: false, rStreamC: false };
 let trueOnMic = true; // State의 상식 밖 동작으로 인한 전역변수
@@ -93,11 +92,6 @@ export default function OpenGroupCall({ navigation, route }) {
 		// });
 	};
 
-	const handleDisconnectBtn = () => {
-		// 피어간 연결 종료 후 이전 화면으로
-		finalize();
-	};
-
 	useEffect(() => {
 		console.log("-------OpenGroupCall useEffect-------");
 
@@ -106,9 +100,13 @@ export default function OpenGroupCall({ navigation, route }) {
 		roomId = route.params.roomId;
 		socket = route.params.socket;
 		setLocalStream(socket.myStream); //
-		console.log(socket.myStream);
 
 		setNumOfUser(route.params.numOfUser + 1);
+
+		// onVideo = useRef(true);
+		// trueOnMic = true;
+		// trueOnSpeak = false;
+
 		// 화면에 사용자 입장/퇴장 메시지 출력
 		popUpMessage("HELLO :)");
 
@@ -241,7 +239,14 @@ export default function OpenGroupCall({ navigation, route }) {
 		};
 	}, []);
 
+	const handleDisconnectBtn = () => {
+		// 피어간 연결 종료 후 이전 화면으로
+		finalize();
+	};
+
 	const finalize = () => {
+		socket.offAny();
+
 		//퇴장 처리
 		console.log("emit ogc_exit_room");
 		socket.emit("ogc_exit_room", roomId);
@@ -255,8 +260,11 @@ export default function OpenGroupCall({ navigation, route }) {
 		// });
 
 		myPeerConnections.forEach((conn) => {
+			conn.setRemoteStream({ toURL: () => null });
 			conn.close();
 		});
+
+		console.log(myPeerConnections);
 
 		// 이벤트 제거
 		socket.removeAllListeners("ogc_user_joins");
@@ -264,8 +272,6 @@ export default function OpenGroupCall({ navigation, route }) {
 		socket.removeAllListeners("ogc_offer");
 		socket.removeAllListeners("ogc_answer");
 		socket.removeAllListeners("ogc_ice");
-		socket.offAny();
-
 		navigation.pop();
 	};
 
