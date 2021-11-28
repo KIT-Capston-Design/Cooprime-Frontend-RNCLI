@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, AsyncStorage } from "react-native";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
 	Badge,
 	HStack,
@@ -10,6 +11,8 @@ import {
 	Box,
 	VStack,
 	IconButton,
+	Center,
+	Text,
 } from "native-base";
 import TagSetting from "../../components/TagSetting";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -47,6 +50,8 @@ export default function Calling({ navigation }) {
 
 	useEffect(() => {
 		// console.log(matchTags);
+		// loadMatchTags();
+		// setMatchTags({ ...matchTags, d: { tagName: "코딩" } });
 		// Object.keys(matchTags).map((key) => {
 		// 	console.log(matchTags[key]);
 		// 	console.log(matchTags[key].tagName);
