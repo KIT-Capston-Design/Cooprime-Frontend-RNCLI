@@ -1,18 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
+import { StyleSheet, Text } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FlashMessage, { showMessage } from "react-native-flash-message";
 import {
 	RTCPeerConnection,
-	RTCIceCandidate,
 	RTCSessionDescription,
 	RTCView,
-	MediaStream,
-	MediaStreamTrack,
-	mediaDevices,
-	registerGlobals,
 } from "react-native-webrtc";
 import {
 	Box,
@@ -96,9 +91,9 @@ export default function OpenGroupCall({ navigation, route }) {
 		setNumOfUser(route.params.numOfUser + 1);
 
 		// 화면에 사용자 입장/퇴장 메시지 출력
-		popUpMessage("HELLO :)");
+		popUpMessage("방에 입장하였습니다.");
 
-		socket.onAny(popUpMessage);
+		// socket.onAny(popUpMessage);
 
 		const createNewPeerConnection = async (userSocketId) => {
 			const curMyPC = new RTCPeerConnection({
@@ -152,6 +147,7 @@ export default function OpenGroupCall({ navigation, route }) {
 			return curMyPC;
 		};
 		socket.on("ogc_user_joins", async (userSocketId, numOfUser) => {
+			popUpMessage("새 유저가 입장하였습니다.");
 			setNumOfUser(numOfUser + 1);
 
 			// 들어오는 유저에 대한 RTCPeerConnection push & setting
@@ -202,6 +198,7 @@ export default function OpenGroupCall({ navigation, route }) {
 		});
 
 		socket.on("ogc_user_leaves", (userSocketId, numOfUser) => {
+			popUpMessage("유저가 퇴장하였습니다.");
 			setNumOfUser(numOfUser - 1);
 
 			myPeerConnections.forEach((conn, index) => {
