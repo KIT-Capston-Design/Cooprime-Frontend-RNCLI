@@ -1,0 +1,2 @@
+json_key_file("./pc-api-8287370405048905092-52-52e0eadcea09.json") # Path to the json secret file - Follow https://docs.fastlane.tools/actions/supply/#setup to get one
+package_name("Cooprime") # e.g. com.krausefx.app
