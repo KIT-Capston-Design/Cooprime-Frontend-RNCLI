@@ -19,7 +19,7 @@ import InCallManager from "react-native-incall-manager";
 
 // const SERVER_DOMAIN = "http://KITCapstone.iptime.org";
 const SERVER_DOMAIN = "http://KITCapstone.iptime.org";
-const SERVER_PORT = "3002";
+const SERVER_PORT = "3000";
 
 let socket;
 let roomName;
@@ -30,26 +30,10 @@ export default function OneToOneCall({ navigation }) {
   const [localStream, setLocalStream] = useState({ toURL: () => null });
   const [remoteStream, setRemoteStream] = useState({ toURL: () => null });
   const [onMic, setOnMic] = useState(false);
-<<<<<<< HEAD
   const onVideo = useRef(true);
   const [showModal, setShowModal] = useState(false); // 신고 팝업창 활성화 변수
-=======
-  const [onVideo, setOnVideo] = useState(true);
-
-  // 신고 팝업창 활성화 변수
-  const [showModal, setShowModal] = useState(false);
   // 통화 화면 들어가기전 로딩 화면 ON/OFF 변수
   const [loading, setLoading] = useState(true);
-
-  const toggleMic = () => {
-    setOnMic(!onMic);
-  };
-
-  const toggleVideo = () => {
-    setOnVideo(!onVideo);
-  };
-
->>>>>>> origin/HEAD
   const [myPeerConnection, setMyPeerConnection] = useState(
     // 우리 서버 : stun:20.78.169.27:3478
     new RTCPeerConnection({

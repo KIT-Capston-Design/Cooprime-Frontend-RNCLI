@@ -24,86 +24,80 @@ const ChatStack = createNativeStackNavigator();
 const Stack = createNativeStackNavigator();
 
 const LoginNavigator = () => {
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Login" component={Login} />
-      {/*
+	return (
+		<Stack.Navigator screenOptions={{ headerShown: false }}>
+			<Stack.Screen name="Login" component={Login} />
+			{/*
       아직 미완성
       <Stack.Screen name="Signup" component={Signup} />
       <Stack.Screen name="PasswordReset" component={PasswordReset} />
       */}
-    </Stack.Navigator>
-  );
+		</Stack.Navigator>
+	);
 };
 
 function ChatStacks() {
-  return (
-    <>
-      <ChatStack.Navigator
-      // screenOptions={{
-      //   headerShown: false,
-      // }}
-      >
-        <ChatStack.Screen
-          name="ChatRoomList"
-          component={ChatRoomList}
-          options={{ headerShown: false }}
-        ></ChatStack.Screen>
-        <ChatStack.Screen
-          name="ChatRoom"
-          component={ChatRoom}
-        ></ChatStack.Screen>
-      </ChatStack.Navigator>
-    </>
-  );
+	return (
+		<>
+			<ChatStack.Navigator
+			// screenOptions={{
+			//   headerShown: false,
+			// }}
+			>
+				<ChatStack.Screen
+					name="ChatRoomList"
+					component={ChatRoomList}
+					options={{ headerShown: false }}
+				></ChatStack.Screen>
+				<ChatStack.Screen name="ChatRoom" component={ChatRoom}></ChatStack.Screen>
+			</ChatStack.Navigator>
+		</>
+	);
 }
 
 function HomeTabs() {
-  return (
-    <>
-      <Header />
-      <HomeTab.Navigator
-        screenOptions={({ route }) => ({
-          tabBarIcon: ({ focused, color, size }) => {
-            let iconName;
-            size = 30;
-            if (route.name === "Calling") {
-              iconName = focused ? "home" : "home-outline";
-            } else if (route.name === "Chat") {
-              iconName = focused ? "chat" : "chat-outline";
-            } else if (route.name === "Alarm") {
-              iconName = focused ? "bell" : "bell-outline";
-            } else if (route.name === "Profile") {
-              iconName = focused ? "account-box" : "account-box-outline";
-            }
+	return (
+		<>
+			<Header />
+			<HomeTab.Navigator
+				screenOptions={({ route }) => ({
+					tabBarIcon: ({ focused, color, size }) => {
+						let iconName;
+						size = 30;
+						if (route.name === "Calling") {
+							iconName = focused ? "home" : "home-outline";
+						} else if (route.name === "Chat") {
+							iconName = focused ? "chat" : "chat-outline";
+						} else if (route.name === "Alarm") {
+							iconName = focused ? "bell" : "bell-outline";
+						} else if (route.name === "Profile") {
+							iconName = focused ? "account-box" : "account-box-outline";
+						}
 
-            // You can return any component that you like here!
-            return <Icon name={iconName} size={size} color={color} />;
-          },
-          tabBarActiveTintColor: "black",
-          tabBarInactiveTintColor: "black",
-          headerShown: false,
-          tabBarShowLabel: false,
-        })}
-      >
-        <HomeTab.Screen name="Profile" component={Profile} />
-        <HomeTab.Screen name="Chat" component={ChatStacks} />
-        <HomeTab.Screen name="Calling" component={Calling} />
-        <HomeTab.Screen name="Alarm" component={Alarm} />
-      </HomeTab.Navigator>
-    </>
-  );
+						// You can return any component that you like here!
+						return <Icon name={iconName} size={size} color={color} />;
+					},
+					tabBarActiveTintColor: "black",
+					tabBarInactiveTintColor: "black",
+					headerShown: false,
+					tabBarShowLabel: false,
+				})}
+			>
+				<HomeTab.Screen name="Calling" component={Calling} />
+				<HomeTab.Screen name="Profile" component={Profile} />
+				<HomeTab.Screen name="Chat" component={ChatStacks} />
+				<HomeTab.Screen name="Alarm" component={Alarm} />
+			</HomeTab.Navigator>
+		</>
+	);
 }
 
 export default function Navigator() {
-  return (
-    <Stack.Navigator
-      initialRouteName="Home"
-      screenOptions={{ headerShown: false }}
-    >
-      <Stack.Screen name="Home" component={HomeTabs} />
-      <Stack.Screen name="OneToOne" component={OneToOneCall} />
-      <Stack.Screen name="Group" component={GroupCall} />
-    </Stack.Navigator>
-  );
+	return (
+		<Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
+			<Stack.Screen name="Home" component={HomeTabs} />
+			<Stack.Screen name="OneToOne" component={OneToOneCall} />
+			<Stack.Screen name="Group" component={GroupCall} />
+		</Stack.Navigator>
+	);
 }
