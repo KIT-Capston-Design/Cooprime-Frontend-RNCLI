@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import ReportModal from "../../components/ReportModal";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import Ionicons from "react-native-vector-icons/Ionicons";
 import { io } from "socket.io-client";
 import {
 	RTCPeerConnection,
@@ -14,7 +16,15 @@ import {
 	registerGlobals,
 } from "react-native-webrtc";
 
-import Icon from "react-native-vector-icons/Feather";
+import {
+	NativeBaseProvider,
+	Box,
+	Stagger,
+	IconButton,
+	Icon,
+	useDisclose,
+	HStack,
+} from "native-base";
 
 // 서버 : "http://kitcapstone.codns.com"
 // PC  : "http://localhost"
@@ -32,6 +42,10 @@ export default function GroupCall({ navigation }) {
 	const iconSize = 60;
 	const [onMic, setOnMic] = useState(false);
 	const [onVideo, setOnVideo] = useState(true);
+	const [onSpeak, setOnSpeak] = useState(false);
+	// "..." 단추 클릭시 메뉴 ON/OFF
+	const { isOpen, onToggle } = useDisclose();
+	const [showModal, setShowModal] = useState(false); // 신고 팝업창 활성화 변수
 
 	const [lStream, setlStream] = useState({ toURL: () => null });
 	const [rStreamA, setrStreamA] = useState({ toURL: () => null });
@@ -67,6 +81,16 @@ export default function GroupCall({ navigation }) {
 
 	const toggleVideo = () => {
 		setOnVideo(!onVideo);
+	};
+
+	const toggleSpeak = () => {
+		setOnSpeak(!onSpeak);
+
+		// localStream과 관련된 코드 필요
+	};
+
+	const openModal = () => {
+		setShowModal((prev) => !prev);
 	};
 
 	const handleDisconnectBtn = () => {
@@ -134,13 +158,10 @@ export default function GroupCall({ navigation }) {
 		const myStream = await mediaDevices.getUserMedia({
 			audio: true,
 			video: {
-				mandatory: {
-					minWidth: 500, // Provide your own width, height and frame rate here
-					minHeight: 300,
-					minFrameRate: 30,
-				},
+				width: { min: 1024, ideal: 1280, max: 1920 },
+				height: { min: 776, ideal: 720, max: 1080 },
+				minFrameRate: 15,
 				facingMode: "user",
-				// optional: videoSourceId ? expo start --localhost --android[{ sourceId: videoSourceId }] : [],
 			},
 		});
 		console.log("get mystream");
@@ -403,80 +424,184 @@ export default function GroupCall({ navigation }) {
 	};
 
 	return (
-		<View style={styles.container}>
-			<View style={styles.videoContainer}>
-				<View style={styles.video}>
-					<RTCView streamURL={rStreamA.toURL()} style={styles.rtcVideo} />
-				</View>
-				<View style={styles.video}>
-					<RTCView streamURL={rStreamB.toURL()} style={styles.rtcVideo} />
-				</View>
-			</View>
-			<View style={styles.videoContainer}>
-				<View style={styles.video}>
-					<RTCView streamURL={rStreamC.toURL()} style={styles.rtcVideo} />
-				</View>
-				<View style={styles.video}>
-					<RTCView streamURL={lStream.toURL()} style={styles.rtcVideo} />
-				</View>
-			</View>
-			<View style={styles.callSetting}>
-				<TouchableOpacity onPress={toggleMic}>
-					<MaterialCommunityIcons
-						name={onMic ? "volume-mute" : "volume-source"}
-						size={iconSize}
-						color={onMic ? "grey" : "black"}
-					/>
-				</TouchableOpacity>
-				<TouchableOpacity onPress={toggleVideo}>
-					<MaterialIcons
-						name={onVideo ? "videocam" : "videocam-off"}
-						size={iconSize}
-						color={onVideo ? "#05ff05" : "red"}
-					/>
-				</TouchableOpacity>
-				<TouchableOpacity onPress={handleDisconnectBtn}>
-					<MaterialCommunityIcons
-						name="phone-off"
-						size={iconSize}
-						color="red"
-					/>
-				</TouchableOpacity>
-			</View>
-		</View>
+		<NativeBaseProvider flex="1">
+			<Box flex="1">
+				<HStack flex="1">
+					<Box flex="1" rounded="lg" borderColor="gray.200" borderWidth="1">
+						<RTCView
+							streamURL={rStreamA.toURL()}
+							style={styles.rtcVideo}
+							mirror={true}
+							objectFit={"cover"}
+						/>
+					</Box>
+					<Box flex="1" rounded="lg" borderColor="gray.200" borderWidth="1">
+						<RTCView
+							streamURL={rStreamB.toURL()}
+							style={styles.rtcVideo}
+							mirror={true}
+							objectFit={"cover"}
+						/>
+					</Box>
+				</HStack>
+				<HStack flex="1">
+					<Box flex="1" rounded="lg" borderColor="gray.200" borderWidth="1">
+						<RTCView
+							streamURL={rStreamC.toURL()}
+							style={styles.rtcVideo}
+							mirror={true}
+							objectFit={"cover"}
+						/>
+					</Box>
+					<Box flex="1" rounded="lg" borderColor="gray.200" borderWidth="1">
+						<RTCView
+							streamURL={lStream.toURL()}
+							style={styles.rtcVideo}
+							mirror={true}
+							objectFit={"cover"}
+						/>
+					</Box>
+				</HStack>
+			</Box>
+			<Box position="absolute" bottom="5" right="5">
+				<Box alignItems="center">
+					<Stagger
+						visible={isOpen}
+						initial={{
+							opacity: 0,
+							scale: 0,
+							translateY: 34,
+						}}
+						animate={{
+							translateY: 0,
+							scale: 1,
+							opacity: 1,
+							transition: {
+								type: "spring",
+								mass: 0.8,
+								stagger: {
+									offset: 30,
+									reverse: true,
+								},
+							},
+						}}
+						exit={{
+							translateY: 34,
+							scale: 0.5,
+							opacity: 0,
+							transition: {
+								duration: 100,
+								stagger: {
+									offset: 30,
+									reverse: true,
+								},
+							},
+						}}
+					>
+						<IconButton
+							mb="4"
+							variant="solid"
+							bg="red.500"
+							colorScheme="red"
+							borderRadius="full"
+							onPress={handleDisconnectBtn}
+							icon={
+								<Icon
+									as={MaterialCommunityIcons}
+									size="6"
+									name="phone-off"
+									color="white"
+								/>
+							}
+						/>
+						<IconButton
+							mb="4"
+							variant="solid"
+							bg={onMic ? "green.500" : "gray.600"}
+							opacity={onMic ? 100 : 70}
+							colorScheme="green"
+							borderRadius="full"
+							onPress={toggleMic}
+							icon={
+								<Icon
+									as={MaterialCommunityIcons}
+									size="6"
+									name={onMic ? "microphone" : "microphone-off"}
+									color="white"
+								/>
+							}
+						/>
+						<IconButton
+							mb="4"
+							variant="solid"
+							bg={onSpeak ? "lime.500" : "gray.600"}
+							opacity={onSpeak ? 100 : 70}
+							onPress={toggleSpeak}
+							colorScheme="lime"
+							borderRadius="full"
+							icon={
+								<Icon as={Ionicons} size="6" name="megaphone" color="white" />
+							}
+						/>
+						<IconButton
+							mb="4"
+							variant="solid"
+							bg={onVideo ? "teal.500" : "gray.600"}
+							opacity={onVideo ? 100 : 70}
+							colorScheme="teal"
+							borderRadius="full"
+							onPress={toggleVideo}
+							icon={
+								<Icon
+									as={MaterialCommunityIcons}
+									size="6"
+									name={onVideo ? "video" : "video-off"}
+									color="white"
+								/>
+							}
+						/>
+						<IconButton
+							mb="4"
+							variant="solid"
+							bg="red.500"
+							colorScheme="red"
+							onPress={openModal}
+							borderRadius="full"
+							icon={
+								<Icon as={MaterialIcons} size="6" name="report" color="white" />
+							}
+						/>
+					</Stagger>
+				</Box>
+				<IconButton
+					variant="solid"
+					borderRadius="full"
+					size="lg"
+					onPress={onToggle}
+					bg="cyan.400"
+					icon={
+						<Icon
+							as={MaterialCommunityIcons}
+							size="6"
+							name="dots-horizontal"
+							color="warmGray.50"
+							_dark={{
+								color: "warmGray.50",
+							}}
+						/>
+					}
+				/>
+			</Box>
+			<ReportModal showModal={showModal} setShowModal={setShowModal} />
+		</NativeBaseProvider>
+		// </View>
 	);
 }
 
 const styles = StyleSheet.create({
-	container: { flex: 1, backgroundColor: "#eeeeee" },
-	videoContainer: {
-		flex: 1,
-		position: "relative",
-		flexDirection: "row",
-	},
-	video: {
-		width: "100%",
-		flex: 1,
-		position: "relative",
-		alignItems: "center",
-		overflow: "hidden",
-		borderRadius: 6,
-		height: 400,
-		backgroundColor: "#ffffff",
-		borderColor: "#cccccc",
-		borderWidth: 1.5,
-	},
 	rtcVideo: {
 		height: "100%",
 		width: "100%",
 		backgroundColor: "#f0f0f0",
-	},
-	callSetting: {
-		backgroundColor: "#fff0ff",
-		flexDirection: "row",
-		justifyContent: "space-between",
-		padding: 20,
-		borderTopColor: "#aaaaaa",
-		borderTopWidth: 0.5,
 	},
 });
