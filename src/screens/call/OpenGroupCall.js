@@ -1,18 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import { StyleSheet, Text } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FlashMessage, { showMessage } from "react-native-flash-message";
-import { io } from "socket.io-client";
 import {
 	RTCPeerConnection,
-	RTCIceCandidate,
 	RTCSessionDescription,
 	RTCView,
-	MediaStream,
-	MediaStreamTrack,
-	mediaDevices,
-	registerGlobals,
 } from "react-native-webrtc";
 import {
 	Box,
@@ -25,76 +20,247 @@ import {
 	Badge,
 } from "native-base";
 
-// 서버 : "http://kitcapstone.codns.com"
-// PC  : "http://localhost"
-// 로컬 : "http://192.168.0.9"
-// 승형PC : "aitta.iptime.org"
+import InCallManager from "react-native-incall-manager";
 
-const SERVER_DOMAIN = "aitta.iptime.org";
-const SERVER_PORT = "3000";
+import { LogBox } from "react-native";
+
+LogBox.ignoreLogs(["new NativeEventEmitter"]);
+LogBox.ignoreLogs(["Non-serializable values"]);
 
 let socket;
-let realRoomName;
-let myRoleNum;
+let roomId;
 
-export default function OpenGroupCall({ navigation }) {
-	const iconSize = 60;
-	const [onMic, setOnMic] = useState(false);
-	const [onVideo, setOnVideo] = useState(true);
+let rStreamsStatus = { rStreamA: false, rStreamB: false, rStreamC: false };
+let trueOnMic = true; // State의 상식 밖 동작으로 인한 전역변수
+let trueOnSpeak = false; // State의 상식 밖 동작으로 인한 전역변수
 
-	// 현재 방 인원수를 나타내는 state // 통화방에 입장/퇴장할 때 변경하면 될 것 같음
-	const [numOfUser, setNumOfUser] = useState(1);
-	// "..." 단추 클릭시 메뉴 ON/OFF
-	const { isOpen, onToggle } = useDisclose();
+export default function OpenGroupCall({ navigation, route }) {
+	const [localStream, setLocalStream] = useState({ toURL: () => null });
+	const [rStreamA, setrStreamA] = useState({ toURL: () => null });
+	const [rStreamB, setrStreamB] = useState({ toURL: () => null });
+	const [rStreamC, setrStreamC] = useState({ toURL: () => null });
 
 	const myPeerConnections = [];
 
-	for (let i = 0; i < 3; i++) {
-		myPeerConnections.push(
-			new RTCPeerConnection({
-				iceServers: [
-					{
-						urls: "stun:stun.l.google.com:19302",
-					},
-					{
-						urls: "stun:stun1.l.google.com:19302",
-					},
-					{
-						urls: "stun:stun2.l.google.com:19302",
-					},
-				],
-			})
-		);
-	}
+	const [onMic, setOnMic] = useState(true);
+	const onVideo = useRef(true);
+	const [onSpeak, setOnSpeak] = useState(false);
+
+	// 현재 방 인원수를 나타내는 state // 통화방에 입장/퇴장할 때 변경하면 될 것 같음
+	const [numOfUser, setNumOfUser] = useState(1);
+
+	// "..." 단추 클릭시 메뉴 ON/OFF
+	const { isOpen, onToggle } = useDisclose();
 
 	const toggleMic = () => {
-		setOnMic(!onMic);
+		trueOnMic = !trueOnMic;
+		setOnMic(trueOnMic);
+
+		socket.myStream.getAudioTracks().forEach((track) => {
+			track.enabled = trueOnMic;
+		});
 	};
 
 	const toggleVideo = () => {
-		setOnVideo(!onVideo);
+		onVideo.current = !onVideo.current;
+
+		onVideo.current
+			? setLocalStream(socket.myStream)
+			: setLocalStream({ toURL: () => null });
+
+		socket.myStream.getVideoTracks().forEach((track) => {
+			track.enabled = onVideo.current;
+		});
 	};
 
-	const handleDisconnectBtn = () => {
-		// 피어간 연결 종료 후 이전 화면으로
-		console.log("handleDisconnectBtn");
-
-		// navigation.navigate("Calling");
-		// navigation.pop();
-		// navigation.goBack();
+	const toggleSpeak = () => {
+		trueOnSpeak = !trueOnSpeak;
+		setOnSpeak(trueOnSpeak);
+		InCallManager.setForceSpeakerphoneOn(trueOnSpeak);
 	};
 
 	useEffect(() => {
-		console.log("-----------------useEffect----------------");
+		console.log("-------OpenGroupCall useEffect-------");
+
+		InCallManager.start({ media: "audio" });
+
+		roomId = route.params.roomId;
+		socket = route.params.socket;
+		setLocalStream(socket.myStream); //
+
+		setNumOfUser(route.params.numOfUser + 1);
 
 		// 화면에 사용자 입장/퇴장 메시지 출력
-		// 파라미터에 사용자 닉네임(혹은 이름) 넣으시면 됩니다.
+		popUpMessage("방에 입장하였습니다.");
 
-		showPopUpMessage("HELLOHELLO");
+		// socket.onAny(popUpMessage);
+
+		const createNewPeerConnection = async (userSocketId) => {
+			const curMyPC = new RTCPeerConnection({
+				iceServers: [
+					{
+						urls: "stun:20.78.169.27:3478",
+					},
+					{
+						urls: "stun:stun.l.google.com:19302",
+					},
+				],
+			});
+
+			myPeerConnections.push(curMyPC);
+
+			curMyPC.userSocketId = userSocketId;
+
+			if (!rStreamsStatus.rStreamA) {
+				rStreamsStatus.rStreamA = true;
+				curMyPC.usedStream = "A";
+				curMyPC.setRemoteStream = setrStreamA;
+			} else if (!rStreamsStatus.rStreamB) {
+				rStreamsStatus.rStreamB = true;
+				curMyPC.usedStream = "B";
+				curMyPC.setRemoteStream = setrStreamB;
+			} else {
+				rStreamsStatus.rStreamC = true;
+				curMyPC.usedStream = "C";
+				curMyPC.setRemoteStream = setrStreamC;
+			}
+
+			console.log("localStream added");
+			curMyPC.addStream(socket.myStream);
+
+			curMyPC.onicecandidate = (data) => {
+				socket.emit("ogc_ice", data.candidate, curMyPC.userSocketId);
+			};
+
+			curMyPC.onaddstream = async (data) => {
+				console.log("On Add Stream");
+				await curMyPC.setRemoteStream(data.stream);
+
+				data.stream.getVideoTracks()[0].onunmute = () => {
+					curMyPC.setRemoteStream(data.stream);
+				};
+				data.stream.getVideoTracks()[0].onmute = () => {
+					curMyPC.setRemoteStream({ toURL: () => null });
+				};
+			};
+
+			return curMyPC;
+		};
+		socket.on("ogc_user_joins", async (userSocketId, numOfUser) => {
+			popUpMessage("새 유저가 입장하였습니다.");
+			setNumOfUser(numOfUser + 1);
+
+			// 들어오는 유저에 대한 RTCPeerConnection push & setting
+
+			const curMyPC = await createNewPeerConnection(userSocketId);
+
+			// offer
+			console.log("create offer");
+			const offer = await curMyPC.createOffer();
+
+			await curMyPC.setLocalDescription(offer);
+
+			console.log("sent the ogc_offer");
+
+			socket.emit("ogc_offer", offer, userSocketId);
+		});
+
+		socket.on("ogc_offer", async (offer, userSocketId) => {
+			// 받은 offer를 통해 Connection, RTCPeerConnection 생성
+
+			const curMyPC = await createNewPeerConnection(userSocketId);
+
+			await curMyPC.setRemoteDescription(new RTCSessionDescription(offer));
+			console.log("create answer");
+			const answer = await curMyPC.createAnswer();
+			curMyPC.setLocalDescription(answer);
+			socket.emit("ogc_answer", answer, userSocketId);
+			console.log("sent the ogc_answer");
+		});
+
+		socket.on("ogc_answer", async (answer, userSocketId) => {
+			myPeerConnections.forEach(async (conn) => {
+				if (conn.userSocketId === userSocketId) {
+					await conn.setRemoteDescription(new RTCSessionDescription(answer));
+					console.log("set the answer");
+					return false;
+				}
+			});
+		});
+
+		socket.on("ogc_ice", (ice, userSocketId) => {
+			myPeerConnections.forEach((conn) => {
+				if (conn.userSocketId === userSocketId) {
+					conn.addIceCandidate(ice);
+					return false;
+				}
+			});
+		});
+
+		socket.on("ogc_user_leaves", (userSocketId, numOfUser) => {
+			popUpMessage("유저가 퇴장하였습니다.");
+			setNumOfUser(numOfUser - 1);
+
+			myPeerConnections.forEach((conn, index) => {
+				if (conn.userSocketId === userSocketId) {
+					conn.setRemoteStream({ toURL: () => null });
+
+					if (conn.usedStream === "A") {
+						rStreamsStatus.rStreamA = false;
+					} else if (conn.usedStream === "B") {
+						rStreamsStatus.rStreamB = false;
+					} else {
+						rStreamsStatus.rStreamC = false;
+					}
+
+					conn.close();
+					myPeerConnections.splice(index, 1);
+				}
+			});
+		});
+
+		return () => {
+			InCallManager.stop();
+		};
 	}, []);
 
-	const showPopUpMessage = (message) => {
-		//화면에 메시지 출력
+	const handleDisconnectBtn = () => {
+		// 피어간 연결 종료 후 이전 화면으로
+		finalize();
+	};
+
+	const finalize = () => {
+		socket.myStream.getTracks().forEach((track) => {
+			track.stop();
+		});
+
+		myPeerConnections.forEach((conn) => {
+			conn.setRemoteStream({ toURL: () => null });
+			conn.close();
+		});
+
+		//퇴장 처리
+		console.log("emit ogc_exit_room");
+		socket.emit("ogc_exit_room", roomId);
+
+		console.log("exit");
+		console.log("emit ogc_observe_roomlist");
+		socket.emit("ogc_observe_roomlist");
+
+		// 이벤트 제거
+
+		socket.offAny();
+		socket.removeAllListeners("ogc_user_joins");
+		socket.removeAllListeners("ogc_user_leaves");
+		socket.removeAllListeners("ogc_offer");
+		socket.removeAllListeners("ogc_answer");
+		socket.removeAllListeners("ogc_ice");
+
+		navigation.pop();
+	};
+
+	const popUpMessage = (message) => {
+		/*화면에 메시지 출력*/
 		showMessage({
 			message: message,
 			backgroundColor: "#c4b5fd",
@@ -110,18 +276,18 @@ export default function OpenGroupCall({ navigation }) {
 			<Box flex="1">
 				<HStack flex="1">
 					<Box flex="1" rounded="lg" borderColor="gray.200" borderWidth="1">
-						<RTCView streamURL={null} style={styles.rtcVideo} />
+						<RTCView streamURL={rStreamA.toURL()} style={styles.rtcVideo} />
 					</Box>
 					<Box flex="1" rounded="lg" borderColor="gray.200" borderWidth="1">
-						<RTCView streamURL={null} style={styles.rtcVideo} />
+						<RTCView streamURL={rStreamB.toURL()} style={styles.rtcVideo} />
 					</Box>
 				</HStack>
 				<HStack flex="1">
 					<Box flex="1" rounded="lg" borderColor="gray.200" borderWidth="1">
-						<RTCView streamURL={null} style={styles.rtcVideo} />
+						<RTCView streamURL={rStreamC.toURL()} style={styles.rtcVideo} />
 					</Box>
 					<Box flex="1" rounded="lg" borderColor="gray.200" borderWidth="1">
-						<RTCView streamURL={null} style={styles.rtcVideo} />
+						<RTCView streamURL={localStream.toURL()} style={styles.rtcVideo} />
 					</Box>
 				</HStack>
 			</Box>
@@ -172,48 +338,53 @@ export default function OpenGroupCall({ navigation }) {
 									as={MaterialCommunityIcons}
 									size="6"
 									name="phone-off"
-									_dark={{
-										color: "warmGray.50",
-									}}
-									color="warmGray.50"
+									color="white"
 								/>
 							}
 						/>
 						<IconButton
 							mb="4"
 							variant="solid"
-							bg="yellow.400"
-							colorScheme="yellow"
+							bg={onMic ? "green.500" : "gray.600"}
+							opacity={onMic ? 100 : 70}
+							colorScheme="green"
 							borderRadius="full"
 							onPress={toggleMic}
 							icon={
 								<Icon
 									as={MaterialCommunityIcons}
-									_dark={{
-										color: "warmGray.50",
-									}}
 									size="6"
-									name="microphone"
-									color="warmGray.50"
+									name={onMic ? "microphone" : "microphone-off"}
+									color="white"
 								/>
 							}
 						/>
 						<IconButton
 							mb="4"
 							variant="solid"
-							bg="teal.400"
+							bg={onSpeak ? "lime.500" : "gray.600"}
+							opacity={onSpeak ? 100 : 70}
+							onPress={toggleSpeak}
+							colorScheme="lime"
+							borderRadius="full"
+							icon={
+								<Icon as={Ionicons} size="6" name="megaphone" color="white" />
+							}
+						/>
+						<IconButton
+							mb="4"
+							variant="solid"
+							bg={onVideo.current ? "teal.500" : "gray.600"}
+							opacity={onVideo.current ? 100 : 70}
 							colorScheme="teal"
 							borderRadius="full"
 							onPress={toggleVideo}
 							icon={
 								<Icon
 									as={MaterialCommunityIcons}
-									_dark={{
-										color: "warmGray.50",
-									}}
 									size="6"
-									name="video"
-									color="warmGray.50"
+									name={onVideo.current ? "video" : "video-off"}
+									color="white"
 								/>
 							}
 						/>
@@ -224,15 +395,7 @@ export default function OpenGroupCall({ navigation }) {
 							colorScheme="red"
 							borderRadius="full"
 							icon={
-								<Icon
-									as={MaterialIcons}
-									size="6"
-									name="report"
-									_dark={{
-										color: "warmGray.50",
-									}}
-									color="warmGray.50"
-								/>
+								<Icon as={MaterialIcons} size="6" name="report" color="white" />
 							}
 						/>
 					</Stagger>

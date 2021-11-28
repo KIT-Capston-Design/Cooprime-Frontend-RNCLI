@@ -128,7 +128,12 @@ export default function GroupCall({ navigation }) {
 		myPeerConnections.forEach((myPeerConnection) => {
 			myPeerConnection.onicecandidate = (data) => {
 				console.log("sent candidate");
-				socket.emit("ice", data.candidate, realRoomName, myPeerConnection.rPeerRoleNum);
+				socket.emit(
+					"ice",
+					data.candidate,
+					realRoomName,
+					myPeerConnection.rPeerRoleNum
+				);
 			};
 
 			myPeerConnection.onaddstream = async (data) => {
@@ -534,7 +539,9 @@ export default function GroupCall({ navigation }) {
 							onPress={toggleSpeak}
 							colorScheme="lime"
 							borderRadius="full"
-							icon={<Icon as={Ionicons} size="6" name="megaphone" color="white" />}
+							icon={
+								<Icon as={Ionicons} size="6" name="megaphone" color="white" />
+							}
 						/>
 						<IconButton
 							mb="4"
@@ -560,7 +567,9 @@ export default function GroupCall({ navigation }) {
 							colorScheme="red"
 							onPress={openModal}
 							borderRadius="full"
-							icon={<Icon as={MaterialIcons} size="6" name="report" color="white" />}
+							icon={
+								<Icon as={MaterialIcons} size="6" name="report" color="white" />
+							}
 						/>
 					</Stagger>
 				</Box>

@@ -12,22 +12,21 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import LinearGradient from "react-native-linear-gradient";
 import InputModal from "../../components/InputModal";
 
+import { mediaDevices } from "react-native-webrtc";
 ////
 import { io } from "socket.io-client";
 import { Value } from "react-native-reanimated";
 import { ControlledPropUpdatedSelectedItem } from "native-base/lib/typescript/components/composites/Typeahead/useTypeahead/types";
-
 ////
 
-const SERVER_DOMAIN = "http://192.168.0.9";
+const SERVER_DOMAIN = "http://aitta.iptime.org";
 const SERVER_PORT = "3000";
 
 let socket;
+let myStream;
 
-export const GroupCallList = () => {
+export const OpenGroupCallList = (prop) => {
 	const [data, setData] = useState([]);
-	const [offset, setOffSet] = useState(0);
-	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
 		//Initialize Socket
@@ -40,7 +39,6 @@ export const GroupCallList = () => {
 			socket.onAny((event) => {
 				console.log("receive", event);
 			});
-			getData();
 
 			console.log("socket initialized");
 
@@ -50,57 +48,56 @@ export const GroupCallList = () => {
 
 			// 소켓 이벤트 등록
 			socket.on("ogc_roomlist", (roomInfList) => {
-				roomInfList = JSON.parse(roomInfList);
+				roomInfList = roomInfList;
 				setData(roomInfList);
 			});
 
-			return () => {
-				// unmount (화면 이탈 시)
-				// 방 목록 구독 탈퇴 요청
-				socket.emit("ogc_unobserve_roomlist");
-				console.log("emit ogc_unobserve_roomlist");
-			};
+			(async () => {
+				const stream = await mediaDevices.getUserMedia({
+					audio: true,
+					video: {
+						width: { min: 1024, ideal: 1280, max: 1920 },
+						height: { min: 776, ideal: 720, max: 1080 },
+						minFrameRate: 15,
+						facingMode: "user",
+					},
+				});
+				socket.myStream = stream;
+			})();
+
+			// return () => {
+			// 	// unmount (화면 이탈 시)
+			// 	// 방 목록 구독 탈퇴 요청
+			// 	socket.emit("ogc_unobserve_roomlist");
+			// 	console.log("emit ogc_unobserve_roomlist");
+			// };
 		})();
 
 		//
 	}, []);
 
-	const getData = () => {
-		setLoading(true);
-
-		// setData([
-		// 	{
-		// 		id: 1,
-		// 		title: "TEST",
-		// 		count: 1,
-		// 	},
-		// ]);
-
-		// 공개 채팅방 정보 읽어오기
-		// fetch("http://jsonplaceholder.typicode.com/posts")
-		//   .then((res) => res.json())
-		//   .then((res) => setData(data.concat(res.slice(offset, offset + LIMIT))))
-		//   .then(() => {
-		//     setOffset(offset + LIMIT);
-		//     setLoading(false);
-		//   })
-		//   .catch((e) => {
-		//     setLoading(false);
-		//   });
-	};
-
-	const roomItemTouchHandler = (item) => {
+	const roomItemTouchHandler = async (item) => {
 		//채팅방 입장
+		await (async () => {
+			const stream = await mediaDevices.getUserMedia({
+				audio: true,
+				video: {
+					width: { min: 1024, ideal: 1280, max: 1920 },
+					height: { min: 776, ideal: 720, max: 1080 },
+					minFrameRate: 15,
+					facingMode: "user",
+				},
+			});
+			socket.myStream = stream;
+		})();
 		socket.emit("ogc_enter_room", item.roomId, isSucc);
 	};
 
-	const isSucc = (val) => {
-		if (val) {
-			Alert.alert("채팅방 입장 성공");
-			// 차후 대기화면으로 이동하여 webRTC 연결 설정하는 코드 필요
-			navigation.navigate("OpenGroupCall");
+	const isSucc = (roomId, cnt) => {
+		if (roomId) {
+			console.log("roomId", roomId);
+			prop.enterOGCRoom(roomId, cnt);
 		} else {
-			Alert.alert("채팅방 입장 실패");
 		}
 	};
 
@@ -135,13 +132,7 @@ export const GroupCallList = () => {
 		);
 	};
 
-	const onEndReached = () => {
-		if (loading) {
-			return;
-		} else {
-			getData();
-		}
-	};
+	const onEndReached = () => {};
 
 	return (
 		<LinearGradient
@@ -160,21 +151,32 @@ export const GroupCallList = () => {
 	);
 };
 
-export default function PublicGroupCall() {
+export default function OpenGroupCall({ navigation }) {
 	//공개통화방 display 변수
 	const [showModal, setShowModal] = useState(false);
 
 	//공개통화방 생성 로직 (방정보 입력 시 호출됨)
 	const createOGCRoom = (roomInfo) => {
-		socket.emit("ogc_room_create", JSON.stringify(roomInfo), (roomId) => {
-			console.log("방 생성 후 입장 완료", roomId);
-		});
 		console.log("emit ogc_room_create");
+		socket.emit("ogc_room_create", JSON.stringify(roomInfo), (roomId) => {
+			console.log("방 생성 후 입장 완료");
+			enterOGCRoom(roomId, 0);
+		});
+	};
+
+	const enterOGCRoom = async (roomId, numOfUser) => {
+		socket.emit("ogc_unobserve_roomlist");
+
+		navigation.navigate("OpenGroupCall", {
+			socket: socket,
+			roomId: roomId,
+			numOfUser: numOfUser,
+		});
 	};
 
 	return (
 		<NativeBaseProvider>
-			<GroupCallList />
+			<OpenGroupCallList enterOGCRoom={enterOGCRoom} />
 			<Box position="relative" h={0} w="100%">
 				<Fab
 					// colorScheme="violet" 이후에 색상 변경할게요
