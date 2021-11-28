@@ -74,6 +74,7 @@ export default TagSetting = ({ isOpen, onClose, matchTags, setMatchTags, saveMat
 					>
 						{Object.keys(matchTags).map((key) => (
 							<Badge
+								key={key}
 								colorScheme="info"
 								flexDirection="row"
 								justifyContent="space-between"

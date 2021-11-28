@@ -23,27 +23,10 @@ const HomeTab = createBottomTabNavigator();
 const ChatStack = createNativeStackNavigator();
 const Stack = createNativeStackNavigator();
 
-const LoginNavigator = () => {
-	return (
-		<Stack.Navigator screenOptions={{ headerShown: false }}>
-			<Stack.Screen name="Login" component={Login} />
-			{/*
-      아직 미완성
-      <Stack.Screen name="Signup" component={Signup} />
-      <Stack.Screen name="PasswordReset" component={PasswordReset} />
-      */}
-		</Stack.Navigator>
-	);
-};
-
 function ChatStacks() {
 	return (
 		<>
-			<ChatStack.Navigator
-			// screenOptions={{
-			//   headerShown: false,
-			// }}
-			>
+			<ChatStack.Navigator>
 				<ChatStack.Screen
 					name="ChatRoomList"
 					component={ChatRoomList}
@@ -84,8 +67,8 @@ function HomeTabs() {
 				})}
 			>
 				<HomeTab.Screen name="Calling" component={Calling} />
-				<HomeTab.Screen name="Profile" component={Profile} />
 				<HomeTab.Screen name="Chat" component={ChatStacks} />
+				<HomeTab.Screen name="Profile" component={Profile} />
 				<HomeTab.Screen name="Alarm" component={Alarm} />
 			</HomeTab.Navigator>
 		</>
