@@ -234,6 +234,8 @@ export default function OpenGroupCall({ navigation, route }) {
 			track.stop();
 		});
 
+		socket.myStream = null;
+
 		myPeerConnections.forEach((conn) => {
 			conn.setRemoteStream({ toURL: () => null });
 			conn.close();
