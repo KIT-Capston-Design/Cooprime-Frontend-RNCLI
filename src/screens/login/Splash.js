@@ -14,7 +14,7 @@ const SplashScreen = ({ navigation }) => {
     setTimeout(() => {
       setAnimating(false);
       // token 삭제 테스트할떄 코드
-      AsyncStorage.removeItem("token");
+      // AsyncStorage.removeItem("token");
 
       // check jwt token in Asyncstorage
       AsyncStorage.getItem("token").then((value) =>

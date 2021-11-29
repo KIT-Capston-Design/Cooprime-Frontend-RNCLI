@@ -48,17 +48,13 @@ export default function OneToOneCall({ navigation }) {
   const [showModal, setShowModal] = useState(false); // 신고 팝업창 활성화 변수
 
   const [myPeerConnection, setMyPeerConnection] = useState(
-    // 우리 서버 : stun:20.78.169.27:3478
     new RTCPeerConnection({
       iceServers: [
         {
+          urls: "stun:20.78.169.27:3478",
+        },
+        {
           urls: "stun:stun.l.google.com:19302",
-        },
-        {
-          urls: "stun:stun1.l.google.com:19302",
-        },
-        {
-          urls: "stun:stun2.l.google.com:19302",
         },
       ],
     })
@@ -109,10 +105,10 @@ export default function OneToOneCall({ navigation }) {
       await setRemoteStream(data.stream);
 
       data.stream.getVideoTracks()[0].onunmute = () => {
-        myPeerConnection.setRemoteStream(data.stream);
+        setRemoteStream(data.stream);
       };
       data.stream.getVideoTracks()[0].onmute = () => {
-        myPeerConnection.setRemoteStream({ toURL: () => null });
+        setRemoteStream({ toURL: () => null });
       };
     };
 
