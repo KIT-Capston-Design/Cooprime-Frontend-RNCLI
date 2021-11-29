@@ -1,13 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Fab, NativeBaseProvider, Box, Icon, Badge, HStack } from "native-base";
-import {
-	StyleSheet,
-	Text,
-	View,
-	TouchableOpacity,
-	FlatList,
-	Alert,
-} from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, FlatList, Alert } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import LinearGradient from "react-native-linear-gradient";
 import InputModal from "../../components/InputModal";
@@ -135,10 +128,7 @@ export const OpenGroupCallList = (prop) => {
 	const onEndReached = () => {};
 
 	return (
-		<LinearGradient
-			colors={["#a78bfa", "#ddd6fe", "#f5f3ff"]}
-			style={styles.container}
-		>
+		<LinearGradient colors={["#a78bfa", "#ddd6fe", "#f5f3ff"]} style={styles.container}>
 			<FlatList
 				style={styles.contentList}
 				data={data}
@@ -187,11 +177,7 @@ export default function OpenGroupCall({ navigation }) {
 					position="absolute"
 					size="sm"
 					icon={
-						<Icon
-							color="white"
-							as={<MaterialCommunityIcons name="plus" />}
-							size="sm"
-						/>
+						<Icon color="white" as={<MaterialCommunityIcons name="plus" />} size="sm" />
 					}
 				/>
 			</Box>
@@ -209,7 +195,6 @@ export default function OpenGroupCall({ navigation }) {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		marginTop: 20,
 	},
 	contentList: {
 		flex: 1,

@@ -95,7 +95,7 @@ export default function Calling({ navigation }) {
             <Button
               height="100"
               w="80"
-              bg="amber.300"
+              bg="yellow.300"
               borderRadius="lg"
               shadow="9"
               marginBottom="1/6"
@@ -143,8 +143,10 @@ export default function Calling({ navigation }) {
             }}
           >
             {Object.keys(matchTags).map((key) => (
-              <Badge borderRadius="md" key={key} _text={{ fontSize: 15 }}>
-                {matchTags[key].tagName}
+              <Badge borderRadius="md" key={key} colorScheme="tertiary">
+                <Text color="tertiary.800" bold fontSize="md">
+                  {matchTags[key].tagName}
+                </Text>
               </Badge>
             ))}
           </HStack>
@@ -156,6 +158,7 @@ export default function Calling({ navigation }) {
             variant="subtle"
             colorScheme="violet"
             endIcon={<Icon as={MaterialIcons} name="edit" size="xs" />}
+            _text={{ fontWeight: "900" }}
           >
             태그 변경
           </Button>

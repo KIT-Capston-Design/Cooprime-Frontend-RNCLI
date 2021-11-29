@@ -78,8 +78,9 @@ export default TagSetting = ({ isOpen, onClose, matchTags, setMatchTags, saveMat
 								colorScheme="info"
 								flexDirection="row"
 								justifyContent="space-between"
+								borderRadius="md"
 							>
-								<Text bold marginRight="1" fontSize="md">
+								<Text bold marginRight="1" fontSize="md" color="info.800">
 									{matchTags[key].tagName}
 								</Text>
 								<IconButton
