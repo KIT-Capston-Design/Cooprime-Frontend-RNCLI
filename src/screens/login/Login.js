@@ -1,15 +1,11 @@
 import React, { useState, createRef } from "react";
 import {
   StyleSheet,
-  TextInput,
   View,
   Text,
   ScrollView,
   Image,
-  Keyboard,
-  TouchableOpacity,
   KeyboardAvoidingView,
-  AsyncStorage,
 } from "react-native";
 
 import Loader from "../../components/Loader";
@@ -31,10 +27,17 @@ const LoginScreen = ({ navigation }) => {
         <View>
           <KeyboardAvoidingView enabled>
             <Text
-              style={styles.registerTextStyle}
+              style={{
+                color: "#000000",
+                textAlign: "center",
+                fontWeight: "bold",
+                fontSize: 18,
+                alignSelf: "center",
+                padding: 10,
+              }}
               onPress={() => navigation.navigate("RegisterPhoneNumberScreen")}
             >
-              무슨 말 쓸까요 그냥 납둘까요?
+              서로 다른 우리, 함께
             </Text>
             <View style={{ alignItems: "center" }}>
               <Image
