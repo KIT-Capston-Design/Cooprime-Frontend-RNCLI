@@ -10,11 +10,11 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
-  AsyncStorage,
 } from "react-native";
 
 import Loader from "../../components/Loader";
 import { SERVER_DOMAIN, SERVER_PORT } from "../../../env";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const AuthPhoneNumber = (props) => {
   const [authNumber, setAuthNumber] = useState("");
@@ -32,7 +32,6 @@ const AuthPhoneNumber = (props) => {
     //Show Loader
     setLoading(true);
 
-    // url 교체 필요
     fetch(`${SERVER_DOMAIN}:${SERVER_PORT}/api/login/register/auth/msg`, {
       method: "POST",
       body: JSON.stringify({
@@ -40,7 +39,6 @@ const AuthPhoneNumber = (props) => {
         auth_number: authNumber,
       }),
       headers: {
-        //Header Defination
         "Content-Type": "application/json",
       },
     })
