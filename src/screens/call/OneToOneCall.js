@@ -26,10 +26,11 @@ import {
 } from "native-base";
 import InCallManager from "react-native-incall-manager";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { SERVER_DOMAIN, SERVER_PORT } from "../../../env";
 
 // const SERVER_DOMAIN = "http://KITCapstone.iptime.org";
-const SERVER_DOMAIN = "http://KITCapstone.iptime.org";
-const SERVER_PORT = "3002";
+// const SERVER_DOMAIN = "http://KITCapstone.iptime.org";
+// const SERVER_PORT = "3002";
 
 let socket;
 let roomName;

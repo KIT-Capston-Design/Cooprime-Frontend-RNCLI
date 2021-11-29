@@ -14,6 +14,7 @@ import {
 } from "react-native";
 
 import Loader from "../../components/Loader";
+import { SERVER_DOMAIN, SERVER_PORT } from "../../../env";
 
 const AuthPhoneNumber = (props) => {
   const [authNumber, setAuthNumber] = useState("");
@@ -32,7 +33,7 @@ const AuthPhoneNumber = (props) => {
     setLoading(true);
 
     // url 교체 필요
-    fetch("http://192.168.231.173:3000/api/login/register/auth/msg", {
+    fetch(`${SERVER_DOMAIN}:${SERVER_PORT}/api/login/register/auth/msg`, {
       method: "POST",
       body: JSON.stringify({
         phone_number: phone_number,

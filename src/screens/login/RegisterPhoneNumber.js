@@ -12,6 +12,7 @@ import {
 } from "react-native";
 
 import Loader from "../../components/Loader";
+import { SERVER_DOMAIN, SERVER_PORT } from "../../../env";
 
 const RegisterPhoneNumber = (props) => {
   const [userPhoneNumber, setUserPhoneNumber] = useState("");
@@ -33,7 +34,7 @@ const RegisterPhoneNumber = (props) => {
     // url 교체 필요
     // const url = "http://KITCapstone.iptime.org:3000/api/user/req/auth/msg";
     // url 환경 변수로 등록 못하나
-    fetch("http://192.168.231.173:3000/api/login/req/auth/msg", {
+    fetch(`${SERVER_DOMAIN}:${SERVER_PORT}/api/login/req/auth/msg`, {
       method: "POST",
       body: JSON.stringify({
         phone_number: userPhoneNumber,

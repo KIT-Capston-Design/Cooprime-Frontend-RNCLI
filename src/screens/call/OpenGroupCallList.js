@@ -18,9 +18,10 @@ import { io } from "socket.io-client";
 import { Value } from "react-native-reanimated";
 import { ControlledPropUpdatedSelectedItem } from "native-base/lib/typescript/components/composites/Typeahead/useTypeahead/types";
 ////
+import { SERVER_DOMAIN, SERVER_PORT } from "../../../env";
 
-const SERVER_DOMAIN = "http://KITCapstone.iptime.org";
-const SERVER_PORT = "3002";
+// const SERVER_DOMAIN = "http://KITCapstone.iptime.org";
+// const SERVER_PORT = "3002";
 
 let socket;
 let myStream;
