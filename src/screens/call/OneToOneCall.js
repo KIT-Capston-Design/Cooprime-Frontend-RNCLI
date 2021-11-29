@@ -27,6 +27,7 @@ import {
 import InCallManager from "react-native-incall-manager";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SERVER_DOMAIN, SERVER_PORT } from "../../../env";
+import FlashMessage, { showMessage } from "react-native-flash-message";
 
 let socket;
 let roomName;
@@ -104,6 +105,8 @@ export default function OneToOneCall({ navigation }) {
       console.log("On Add Stream");
       await setRemoteStream(data.stream);
 
+      popUpMessage("상대방과 연결됐습니다.");
+
       data.stream.getVideoTracks()[0].onunmute = () => {
         setRemoteStream(data.stream);
       };
@@ -168,6 +171,21 @@ export default function OneToOneCall({ navigation }) {
     socket.on("ice", (ice) => {
       console.log("received candidate");
       myPeerConnection.addIceCandidate(ice);
+    });
+
+    socket.on("discon_onetoone", () => {
+      console.log("discon_onetoone");
+      popUpMessage("상대방이 나갔습니다.");
+      navigation.pop();
+    });
+  };
+
+  const popUpMessage = (message) => {
+    /*화면에 메시지 출력*/
+    showMessage({
+      message: message,
+      backgroundColor: "#c4b5fd",
+      color: "#ffffff",
     });
   };
 
@@ -382,6 +400,7 @@ export default function OneToOneCall({ navigation }) {
         />
       </Box>
       <ReportModal showModal={showModal} setShowModal={setShowModal} />
+      <FlashMessage />
     </NativeBaseProvider>
   );
 }
