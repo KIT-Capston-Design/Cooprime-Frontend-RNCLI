@@ -1,15 +1,10 @@
 import React, { useState, useEffect } from "react";
-import {
-  ActivityIndicator,
-  View,
-  StyleSheet,
-  Image,
-  AsyncStorage,
-} from "react-native";
+import { ActivityIndicator, View, StyleSheet, Image } from "react-native";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SplashScreen = ({ navigation }) => {
   //State for ActivityIndicator animation
@@ -31,7 +26,7 @@ const SplashScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Image
-        source={require("../../assets/images/test.png")}
+        source={require("../../assets/images/Cooprime_title.png")}
         style={{ width: wp(55), resizeMode: "contain", margin: 30 }}
       />
       {/* Loading bar */}
@@ -52,7 +47,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "white",
+    backgroundColor: "#E6E6E6",
   },
   activityIndicator: {
     alignItems: "center",

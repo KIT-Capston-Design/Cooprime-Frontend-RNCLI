@@ -30,12 +30,18 @@ const LoginScreen = ({ navigation }) => {
       >
         <View>
           <KeyboardAvoidingView enabled>
+            <Text
+              style={styles.registerTextStyle}
+              onPress={() => navigation.navigate("RegisterPhoneNumberScreen")}
+            >
+              무슨 말 쓸까요 그냥 납둘까요?
+            </Text>
             <View style={{ alignItems: "center" }}>
               <Image
-                source={require("../../assets/images/test.png")}
+                source={require("../../assets/images/Cooprime_title.png")}
                 style={{
                   width: "50%",
-                  height: 100,
+                  height: 300,
                   resizeMode: "contain",
                   margin: 30,
                 }}
@@ -59,7 +65,7 @@ const styles = StyleSheet.create({
   mainBody: {
     flex: 1,
     justifyContent: "center",
-    backgroundColor: "#ffffff",
+    backgroundColor: "#E6E6E6",
     alignContent: "center",
   },
   SectionStyle: {
