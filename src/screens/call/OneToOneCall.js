@@ -110,7 +110,13 @@ export default function OneToOneCall({ navigation }) {
     myPeerConnection.onaddstream = async (data) => {
       console.log("On Add Stream");
       await setRemoteStream(data.stream);
-      setTimeout(() => setLocalStream(myStream), 1000);
+
+      data.stream.getVideoTracks()[0].onunmute = () => {
+        myPeerConnection.setRemoteStream(data.stream);
+      };
+      data.stream.getVideoTracks()[0].onmute = () => {
+        myPeerConnection.setRemoteStream({ toURL: () => null });
+      };
     };
 
     return () => {
