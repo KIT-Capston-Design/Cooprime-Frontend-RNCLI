@@ -37,6 +37,7 @@ let myStream;
 
 let trueOnMic = true; // State의 상식 밖 동작으로 인한 전역변수
 let trueOnSpeak = false; // State의 상식 밖 동작으로 인한 전역변수
+
 export default function OneToOneCall({ navigation }) {
   const iconSize = 60;
   const [localStream, setLocalStream] = useState({ toURL: () => null });
@@ -69,7 +70,9 @@ export default function OneToOneCall({ navigation }) {
   const toggleMic = () => {
     trueOnMic = !trueOnMic;
     setOnMic(trueOnMic);
-    myPeerConnection.getLocalStreams()[0].getAudioTracks()[0].enabled = onMic;
+
+    myPeerConnection.getLocalStreams()[0].getAudioTracks()[0].enabled =
+      trueOnMic;
   };
 
   const toggleVideo = async () => {
