@@ -30,11 +30,7 @@ const config = {
 };
 
 export default function Calling({ navigation }) {
-  const [matchTags, setMatchTags] = useState({
-    a123: { tagName: "낚시" },
-    b456: { tagName: "게임" },
-    c789: { tagName: "축구" },
-  });
+  const [matchTags, setMatchTags] = useState({});
   // 태그 수정 화면 ON/OFF 변수 및 함수
   const { isOpen, onOpen, onClose } = useDisclose();
 
@@ -49,16 +45,7 @@ export default function Calling({ navigation }) {
   };
 
   useEffect(() => {
-    // console.log(matchTags);
-    // loadMatchTags();
-    // setMatchTags({ ...matchTags, d: { tagName: "코딩" } });
-    // Object.keys(matchTags).map((key) => {
-    // 	console.log(matchTags[key]);
-    // 	console.log(matchTags[key].tagName);
-    // });
-    // loadMatchTags();
-    // const text = "awef";
-    // setMatchTags({ ...matchTags, [Date.now()]: { text } });
+    loadMatchTags();
   }, []);
 
   const loadMatchTags = async () => {

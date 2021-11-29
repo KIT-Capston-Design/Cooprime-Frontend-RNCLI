@@ -41,7 +41,7 @@ export default function OneToOneCall({ navigation }) {
   const iconSize = 60;
   const [localStream, setLocalStream] = useState({ toURL: () => null });
   const [remoteStream, setRemoteStream] = useState({ toURL: () => null });
-  const [onMic, setOnMic] = useState(false);
+  const [onMic, setOnMic] = useState(true);
   const onVideo = useRef(true);
   const [onSpeak, setOnSpeak] = useState(false);
 
@@ -77,10 +77,6 @@ export default function OneToOneCall({ navigation }) {
     onVideo.current
       ? setLocalStream(myStream)
       : setLocalStream({ toURL: () => null });
-    // myPeerConnection
-    //   .getLocalStreams()[0]
-    //   .getVideoTracks()[0]
-    //   .onended(setRemoteStream({ toURL: () => null }));
     myPeerConnection.getLocalStreams()[0].getVideoTracks()[0].enabled =
       onVideo.current;
   };
@@ -95,7 +91,7 @@ export default function OneToOneCall({ navigation }) {
     console.log("-----------------useEffect----------------");
 
     InCallManager.start({ media: "audio" });
-    InCallManager.setForceSpeakerphoneOn(true);
+
     await getMedia();
     setLocalStream(myStream);
 
@@ -113,11 +109,6 @@ export default function OneToOneCall({ navigation }) {
       await setRemoteStream(data.stream);
       setTimeout(() => setLocalStream(myStream), 1000);
     };
-
-    myPeerConnection
-      .getLocalStreams()[0]
-      .getVideoTracks()[0]
-      .onended(() => console.log("aaa"));
 
     return () => {
       InCallManager.stop();
@@ -222,15 +213,15 @@ export default function OneToOneCall({ navigation }) {
   /* 피어간 연결 종료 */
   const handleDisconnectBtn = () => {
     console.log("socket disconnect");
+
     if (socket !== undefined && socket !== null && socket.connected) {
-      socket.emit("discon", roomName);
-      // socket.disconnect();
+      socket.emit("discon_onetoone", roomName);
       myPeerConnection.close();
-    } else {
-      console.log("socket is undifined");
     }
+
     socket = null;
-    navigation.navigate("Calling");
+
+    navigation.pop();
   };
 
   const openModal = () => {
