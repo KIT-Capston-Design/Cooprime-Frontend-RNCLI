@@ -1,6 +1,7 @@
 import React from "react";
 
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import Ionicons from "react-native-vector-icons/Ionicons";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
@@ -18,6 +19,10 @@ import Alarm from "./Alarm";
 // ChatStacks
 import ChatRoomList from "./chat/ChatRoomList";
 import ChatRoom from "./chat/ChatRoom";
+
+// OpenGroupCallStacks
+import OpenGroupCall from "./call/OpenGroupCall";
+import OpenGroupCallList from "./call/OpenGroupCallList";
 
 const HomeTab = createBottomTabNavigator();
 const ChatStack = createNativeStackNavigator();
@@ -38,6 +43,20 @@ function ChatStacks() {
 	);
 }
 
+function OpenGroupCallStacks() {
+	return (
+		<>
+			<ChatStack.Navigator screenOptions={{ headerShown: false }}>
+				<ChatStack.Screen
+					name="OpenGroupCallList"
+					component={OpenGroupCallList}
+				></ChatStack.Screen>
+				<ChatStack.Screen name="OpenGroupCall" component={OpenGroupCall}></ChatStack.Screen>
+			</ChatStack.Navigator>
+		</>
+	);
+}
+
 function HomeTabs() {
 	return (
 		<>
@@ -49,8 +68,8 @@ function HomeTabs() {
 						size = 30;
 						if (route.name === "Calling") {
 							iconName = focused ? "home" : "home-outline";
-						} else if (route.name === "Chat") {
-							iconName = focused ? "chat" : "chat-outline";
+						} else if (route.name === "OpenGroupCallStacks") {
+							iconName = focused ? "md-enter" : "md-enter-outline";
 						} else if (route.name === "Alarm") {
 							iconName = focused ? "bell" : "bell-outline";
 						} else if (route.name === "Profile") {
@@ -58,7 +77,11 @@ function HomeTabs() {
 						}
 
 						// You can return any component that you like here!
-						return <Icon name={iconName} size={size} color={color} />;
+						if (route.name === "OpenGroupCallStacks") {
+							return <Ionicons name={iconName} size={size} color={color} />;
+						} else {
+							return <Icon name={iconName} size={size} color={color} />;
+						}
 					},
 					tabBarActiveTintColor: "black",
 					tabBarInactiveTintColor: "black",
@@ -67,7 +90,7 @@ function HomeTabs() {
 				})}
 			>
 				<HomeTab.Screen name="Calling" component={Calling} />
-				<HomeTab.Screen name="Chat" component={ChatStacks} />
+				<HomeTab.Screen name="OpenGroupCallStacks" component={OpenGroupCallStacks} />
 				<HomeTab.Screen name="Profile" component={Profile} />
 				<HomeTab.Screen name="Alarm" component={Alarm} />
 			</HomeTab.Navigator>
